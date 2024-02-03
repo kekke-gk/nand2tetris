@@ -27,10 +27,64 @@ CHIP CPU {
                          // the current program (reset==0).
 
     OUT outM[16],        // M value output
-        writeM,          // Write to M? 
+        writeM,          // Write to M?
         addressM[15],    // Address in data memory (of M)
         pc[15];          // Address of next instruction
 
     PARTS:
-    //// Replace this comment with your code.
+    /**
+     * A-Instruction
+     *     0vvv vvvv vvvv vvvv
+     *
+     * C-Instruction
+     *     15141312  1110 9 8   7 6 5 4   3 2 1 0
+     *      1 1 1 a  c1c2c3c4  c5c6d1d2  d3j1j2j3
+     *
+     *     12 : a  : input M instead of A
+     *
+     *     11 : c1 : zx(zero x)
+     *     10 : c2 : nx(not x)
+     *      9 : c3 : zy(zero y)
+     *      8 : c4 : ny(not y)
+     *      7 : c5 : f(x+y or x&y)
+     *      6 : c6 : no(not out)
+     *
+     *      5 : d1 : write A
+     *      4 : d2 : write D
+     *      3 : d3 : write M
+     *
+     *      2 : j1 : <0
+     *      1 : j2 : =0
+     *      0 : j3 : >0
+     */
+    
+    Or16(a=instruction, out[15]=cInstruction, out[12]=a,
+         out[11]=zx, out[10]=nx, out[9]=zy, out[8]=ny, out[7]=f, out[6]=no,
+         out[5]=d1, out[4]=d2, out[3]=d3, out[2]=j1, out[1]=j2, out[0]=j3);
+    Not(in=instruction[15], out=aInstruction);
+
+    Mux16(a=instruction, b=pout, sel=cInstruction, out=inst);
+
+    Or(a=aInstruction, b=d1, out=aRegLoad);
+    ARegister(in=inst, load=aRegLoad, out=aReg, out[0..14]=addressM);
+
+    And(a=cInstruction, b=d2, out=dRegLoad);
+    DRegister(in=pout, load=dRegLoad, out=dReg);
+
+    Mux16(a=aReg, b=inM, sel=a, out=AorM);
+
+    ALU(x=dReg, y=AorM,
+        zx=zx, nx=nx, zy=zy, ny=ny, f=f, no=no,
+        out=pout, out=outM, zr=zr, ng=ng);
+
+    Or(a=zr, b=ng, out=psnot);
+    Not(in=psnot, out=ps);
+    And(a=j3, b=ps, out=jps);
+    And(a=j2, b=zr, out=jzr);
+    And(a=j1, b=ng, out=jng);
+    Or8Way(in[0]=jps, in[1]=jzr, in[2]=jng, out=jump);
+    And(a=cInstruction, b=jump, out=pcLoad);
+    PC(in=aReg, inc=true, load=pcLoad, reset=reset, out[0..14]=pc);
+
+    And(a=d3, b=cInstruction, out=writeM);
 }
