@@ -2,7 +2,7 @@
 // and the book "The Elements of Computing Systems"
 // by Nisan and Schocken, MIT Press.
 // File name: projects/05/Memory.hdl
-/** 
+/**
  * The Memory chip implements the complete address space of the Hack data memory,
  * including RAM, memory mapped screen, and memory mapped keyboard.
  * Outputs the value of the memory location specified by the address input.
@@ -13,11 +13,52 @@
  * Access to address 0 to 16383 (0x0000 to 0x3FFF) results in accessing the RAM;
  * Access to address 16384 to 24575 (0x4000 to 0x5FFF) results in accessing the Screen memory map;
  * Access to address 24576 (0x6000) results in accessing the Keyboard memory map.
- */ 
+ */
 CHIP Memory {
     IN in[16], load, address[15];
     OUT out[16];
 
     PARTS:
-    //// Replace this comment with your code.
+    /**
+     * 111 1100 0000 0000
+     * 432 1098 7654 3210
+     * ------------------
+     * 000 0000 0000 0000 (0x0000) --------
+     * 000 0000 0000 0001
+     * ...                         RAM16K
+     * 011 1111 1111 1110
+     * 011 1111 1111 1111 (0x3FFF) --------
+     * 100 0000 0000 0000 (0x4000) --------
+     * 100 0000 0000 0001
+     * ...                         Screen
+     * 101 1111 1111 1110
+     * 101 1111 1111 1111 (0x5FFF) --------
+     * 110 0000 0000 0000 (0x6000) Keyboard
+     *
+     * 11
+     * 43
+     * --
+     * 00 -> RAM16K
+     * 01 -> RAM16K
+     * 10 -> Screen
+     * 11 -> Keyboard
+     */
+    
+    // RAM16K
+    // address[14] is 0
+    Not(in=address[14], out=toR);
+    And(a=load, b=toR, out=loadR);
+
+    // Screen
+    // address[13] is 0 and address[14] is 1
+    Not(in=address[13], out=s0);
+    And(a=s0, b=address[14], out=toS);
+    And(a=load, b=toS, out=loadS);
+
+    RAM16K(in=in, load=loadR, address=address[0..13], out=outR);
+    Screen(in=in, load=loadS, address=address[0..12], out=outS);
+    Keyboard(out=outK);
+
+    Mux16(a=outK, b=outR, sel=toR, out=out0);
+    Mux16(a=out0, b=outS, sel=toS, out=out);
 }
