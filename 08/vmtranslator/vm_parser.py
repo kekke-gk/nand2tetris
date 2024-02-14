@@ -9,7 +9,7 @@ class Command:
         self.type: Command.Type = self.__analyze()
 
     def __repr__(self) -> str:
-        return f"{self.line}({self.type.value})"
+        return f"{self.line}({self.type.name})"
 
     class Type(Flag):
         C_ARITHMETIC = auto()
@@ -24,10 +24,23 @@ class Command:
 
     def __analyze(self) -> Type:
         self.args: list[str] = self.line.split()
-        if self.args[0] == "push":
+        arg = self.args[0]
+        if arg == "push":
             return self.Type.C_PUSH
-        if self.args[0] == "pop":
+        if arg == "pop":
             return self.Type.C_POP
+        if arg == "label":
+            return self.Type.C_LABEL
+        if arg == "function":
+            return self.Type.C_FUNCTION
+        if arg == "if-goto":
+            return self.Type.C_IF
+        if arg == "goto":
+            return self.Type.C_GOTO
+        if arg == "return":
+            return self.Type.C_RETURN
+        if arg == "call":
+            return self.Type.C_CALL
         return self.Type.C_ARITHMETIC
 
 
