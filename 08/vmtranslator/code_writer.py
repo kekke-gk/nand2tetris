@@ -4,9 +4,10 @@ from vm_parser import Command
 
 
 class CodeWriter:
-    def __init__(self, filename: str) -> None:
+    def __init__(self, filename: str = "") -> None:
         self.filename: str = filename
         self.label_num = 0
+        self.return_label_num = 0
 
     segment_table: dict[str, str] = {
         "local": "LCL",
@@ -46,7 +47,8 @@ class CodeWriter:
 
         asmcodes: list[str] = list(itertools.chain.from_iterable(asmcodes_list))
 
-        return asmcodes + self.asmcodes_end
+        return asmcodes
+        # return asmcodes + self.asmcodes_end
 
     def command2asmcodes(self, command: Command) -> list[str]:
         if command.type == Command.Type.C_PUSH:
@@ -217,7 +219,6 @@ class CodeWriter:
     def __command2asmcodes_function(self, command: Command) -> list[str]:
         func_name = command.args[1]
         num_vars = int(command.args[2])
-        self.return_label = f"{func_name}ret"
 
         asmcodes = []
 
@@ -226,7 +227,8 @@ class CodeWriter:
         ]
 
         for i in range(num_vars):
-            asmcodes += self.command2asmcodes(Command("push local 0"))
+            asmcodes += self.command2asmcodes(Command("push constant 0"))
+            # asmcodes += self.command2asmcodes(Command(f"pop local {i}"))
 
         return asmcodes
 
@@ -296,7 +298,9 @@ class CodeWriter:
     def __command2asmcodes_call(self, command: Command) -> list[str]:
         func_name = command.args[1]
         num_args = int(command.args[2])
-        self.return_label = f"{func_name}ret"
+        self.return_label = f"{func_name}ret{self.return_label_num}"
+
+        self.return_label_num += 1
 
         asmcodes = []
 
@@ -366,3 +370,18 @@ class CodeWriter:
         ]
 
         return self.asmcodes_pop + asmcodes
+
+    def bootstrap_asmcodes(self) -> list[str]:
+        asmcodes = [
+            "// bootstrap",
+            # SP = 256
+            "@256",
+            "D=A",
+            "@SP",
+            "M=D",
+            "// call Sys.init 0",
+        ]
+
+        asmcodes += self.__command2asmcodes_call(Command("call Sys.init 0"))
+
+        return asmcodes
