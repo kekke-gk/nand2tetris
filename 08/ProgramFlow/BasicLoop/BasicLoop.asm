@@ -1,4 +1,4 @@
-// push constant 0(C_PUSH)
+// push constant 0(C_PUSH) 0
 @0
 D=A
 @SP
@@ -6,7 +6,7 @@ A=M
 M=D
 @SP
 M=M+1
-// pop local 0(C_POP)
+// pop local 0(C_POP) 7
 @SP
 M=M-1
 @SP
@@ -25,9 +25,9 @@ D=M
 @R14
 A=M
 M=D
-// label LOOP(C_LABEL)
+// label LOOP(C_LABEL) 25
 (LOOP)
-// push argument 0(C_PUSH)
+// push argument 0(C_PUSH) 25
 @ARG
 D=M
 @0
@@ -39,7 +39,7 @@ A=M
 M=D
 @SP
 M=M+1
-// push local 0(C_PUSH)
+// push local 0(C_PUSH) 36
 @LCL
 D=M
 @0
@@ -51,7 +51,7 @@ A=M
 M=D
 @SP
 M=M+1
-// add(C_ARITHMETIC)
+// add(C_ARITHMETIC) 47
 @SP
 M=M-1
 @SP
@@ -71,7 +71,7 @@ A=M
 M=D
 @SP
 M=M+1
-// pop local 0(C_POP)
+// pop local 0(C_POP) 66
 @SP
 M=M-1
 @SP
@@ -90,7 +90,7 @@ D=M
 @R14
 A=M
 M=D
-// push argument 0(C_PUSH)
+// push argument 0(C_PUSH) 84
 @ARG
 D=M
 @0
@@ -102,7 +102,7 @@ A=M
 M=D
 @SP
 M=M+1
-// push constant 1(C_PUSH)
+// push constant 1(C_PUSH) 95
 @1
 D=A
 @SP
@@ -110,7 +110,7 @@ A=M
 M=D
 @SP
 M=M+1
-// sub(C_ARITHMETIC)
+// sub(C_ARITHMETIC) 102
 @SP
 M=M-1
 @SP
@@ -130,7 +130,7 @@ A=M
 M=D
 @SP
 M=M+1
-// pop argument 0(C_POP)
+// pop argument 0(C_POP) 121
 @SP
 M=M-1
 @SP
@@ -149,7 +149,7 @@ D=M
 @R14
 A=M
 M=D
-// push argument 0(C_PUSH)
+// push argument 0(C_PUSH) 139
 @ARG
 D=M
 @0
@@ -161,7 +161,7 @@ A=M
 M=D
 @SP
 M=M+1
-// if-goto LOOP(C_IF)
+// if-goto LOOP(C_IF) 150
 @SP
 M=M-1
 @SP
@@ -169,7 +169,7 @@ A=M
 D=M
 @LOOP
 D;JNE
-// push local 0(C_PUSH)
+// push local 0(C_PUSH) 157
 @LCL
 D=M
 @0

@@ -3,7 +3,7 @@
 D=A
 @SP
 M=D
-// call Sys.init 0 4
+// call Sys.init 0(C_CALL) 4
 @Sys.initret0
 D=A
 @SP

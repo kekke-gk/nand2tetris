@@ -1,6 +1,22 @@
-// function SimpleFunction.test 2(C_FUNCTION)
+// function SimpleFunction.test 2(C_FUNCTION) 0
 (SimpleFunction.test)
-// push local 0(C_PUSH)
+// push constant 0(C_PUSH) 0
+@0
+D=A
+@SP
+A=M
+M=D
+@SP
+M=M+1
+// push constant 0(C_PUSH) 7
+@0
+D=A
+@SP
+A=M
+M=D
+@SP
+M=M+1
+// push local 0(C_PUSH) 14
 @LCL
 D=M
 @0
@@ -12,31 +28,7 @@ A=M
 M=D
 @SP
 M=M+1
-// push local 0(C_PUSH)
-@LCL
-D=M
-@0
-D=D+A
-A=D
-D=M
-@SP
-A=M
-M=D
-@SP
-M=M+1
-// push local 0(C_PUSH)
-@LCL
-D=M
-@0
-D=D+A
-A=D
-D=M
-@SP
-A=M
-M=D
-@SP
-M=M+1
-// push local 1(C_PUSH)
+// push local 1(C_PUSH) 25
 @LCL
 D=M
 @1
@@ -48,7 +40,7 @@ A=M
 M=D
 @SP
 M=M+1
-// add(C_ARITHMETIC)
+// add(C_ARITHMETIC) 36
 @SP
 M=M-1
 @SP
@@ -68,7 +60,7 @@ A=M
 M=D
 @SP
 M=M+1
-// not(C_ARITHMETIC)
+// not(C_ARITHMETIC) 55
 @SP
 M=M-1
 @SP
@@ -80,7 +72,7 @@ A=M
 M=D
 @SP
 M=M+1
-// push argument 0(C_PUSH)
+// push argument 0(C_PUSH) 66
 @ARG
 D=M
 @0
@@ -92,7 +84,7 @@ A=M
 M=D
 @SP
 M=M+1
-// add(C_ARITHMETIC)
+// add(C_ARITHMETIC) 77
 @SP
 M=M-1
 @SP
@@ -112,7 +104,7 @@ A=M
 M=D
 @SP
 M=M+1
-// push argument 1(C_PUSH)
+// push argument 1(C_PUSH) 96
 @ARG
 D=M
 @1
@@ -124,7 +116,7 @@ A=M
 M=D
 @SP
 M=M+1
-// sub(C_ARITHMETIC)
+// sub(C_ARITHMETIC) 107
 @SP
 M=M-1
 @SP
@@ -144,7 +136,7 @@ A=M
 M=D
 @SP
 M=M+1
-// return(C_RETURN)
+// return(C_RETURN) 126
 @LCL
 D=M
 @R13

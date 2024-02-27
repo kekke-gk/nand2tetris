@@ -3,8 +3,8 @@
 D=A
 @SP
 M=D
-// call Sys.init 0 4
-@Sys.initret
+// call Sys.init 0(C_CALL) 4
+@Sys.initret0
 D=A
 @SP
 A=M
@@ -53,7 +53,7 @@ D=M
 M=D
 @Sys.init
 0;JMP
-(Sys.initret)
+(Sys.initret0)
 // function Sys.init 0(C_FUNCTION) 53
 (Sys.init)
 // push constant 4000(C_PUSH) 53
@@ -89,7 +89,7 @@ D=M
 @4
 M=D
 // call Sys.main 0(C_CALL) 81
-@Sys.mainret
+@Sys.mainret1
 D=A
 @SP
 A=M
@@ -138,7 +138,7 @@ D=M
 M=D
 @Sys.main
 0;JMP
-(Sys.mainret)
+(Sys.mainret1)
 // pop temp 1(C_POP) 130
 @SP
 M=M-1
@@ -316,7 +316,7 @@ M=D
 @SP
 M=M+1
 // call Sys.add12 1(C_CALL) 284
-@Sys.add12ret
+@Sys.add12ret2
 D=A
 @SP
 A=M
@@ -365,7 +365,7 @@ D=M
 M=D
 @Sys.add12
 0;JMP
-(Sys.add12ret)
+(Sys.add12ret2)
 // pop temp 0(C_POP) 333
 @SP
 M=M-1
