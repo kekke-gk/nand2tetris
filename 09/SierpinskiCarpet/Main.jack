@@ -1,0 +1,8 @@
+class Main {
+    function void main() {
+        var SierpinskiCarpet carpet;
+        let carpet = SierpinskiCarpet.new();
+        do carpet.run();
+        return;
+    }
+}
