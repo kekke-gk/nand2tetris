@@ -1,0 +1,54 @@
+class SierpinskiCarpet {
+    field int dim;
+
+    constructor SierpinskiCarpet new() {
+        let dim = 0;
+
+        do Screen.setColor(true);
+        do Screen.drawRectangle(0, 0, 255, 255);
+        do Screen.setColor(false);
+        return this;
+    }
+
+    method void run() {
+        var char key;
+
+        while(true) {
+            while(key = 0) {
+                let key = Keyboard.keyPressed();
+            }
+            
+            let dim = dim + 1;
+            do draw(dim, 256, 128, 128);
+
+            do Sys.wait(100);
+            let key = 0;
+        }
+        return;
+    }
+
+    method void draw(int d, int width, int centerX, int centerY) {
+        var int width_3;
+        var int width_6;
+
+        let width_3 = Math.divide(width, 3);
+
+        if(d > 1) {
+            do draw(d - 1, width_3, centerX - width_3, centerY - width_3);
+            do draw(d - 1, width_3, centerX - width_3, centerY + width_3);
+            do draw(d - 1, width_3, centerX + width_3, centerY - width_3);
+            do draw(d - 1, width_3, centerX + width_3, centerY + width_3);
+
+            do draw(d - 1, width_3, centerX - width_3, centerY);
+            do draw(d - 1, width_3, centerX + width_3, centerY);
+
+            do draw(d - 1, width_3, centerX, centerY - width_3);
+            do draw(d - 1, width_3, centerX, centerY + width_3);
+        }
+
+        let width_6 = Math.divide(width_3, 2);
+        do Screen.drawRectangle(centerX - width_6, centerY - width_6,
+                                centerX + width_6, centerY + width_6);
+        return;
+    }
+}
