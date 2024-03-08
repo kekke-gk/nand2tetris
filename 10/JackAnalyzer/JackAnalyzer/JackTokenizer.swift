@@ -32,7 +32,7 @@ class JackTokenizer {
         var inComment = false
         var inString = false
         for line in lines {
-            print(line)
+//            print(line)
             var tokens: [Token] = []
             var curStr: String = ""
             let l = Array(line.trimmingCharacters(in: .whitespacesAndNewlines))
@@ -52,22 +52,36 @@ class JackTokenizer {
                     break
                 }
 
-                if inString && c != "\"" {
-                    curStr += String(c)
-                    continue
+                if inString {
+                    if c == "\"" {
+                        inString = false
+                        curStr += String(c)
+                        if let token = Token(str: curStr) {
+                            tokens.append(token)
+//                            print(token.XMLTag())
+                        } else {
+                            throw JackError.tokenize(curStr)
+                        }
+                        curStr = ""
+
+                        continue
+                    } else {
+                        curStr += String(c)
+                        continue
+                    }
                 }
 
                 if curStr != "" && delimiters.contains(String(c)) {
                     if let token = Token(str: curStr) {
                         tokens.append(token)
-                        print(token.XMLTag())
+//                        print(token.XMLTag())
                     } else {
                         throw JackError.tokenize(curStr)
                     }
                     if Symbol.allValues.contains(String(c)) {
                         if let token = Token(str: String(c)) {
                             tokens.append(token)
-                            print(token.XMLTag())
+//                            print(token.XMLTag())
                         } else {
                             throw JackError.tokenize(String(c))
                         }
@@ -75,14 +89,24 @@ class JackTokenizer {
                     curStr = ""
                 } else if curStr == "" && c == " " {
                     continue
-                } else {
+                } else if curStr == "" && c == "\"" {
+                    curStr += String(c)
+                    inString = true
+                } else if Symbol.allValues.contains(String(c)) {
+                    if let token = Token(str: String(c)) {
+                        tokens.append(token)
+//                        print(token.XMLTag())
+                    } else {
+                        throw JackError.tokenize(String(c))
+                    }
+                }else {
                     curStr += String(c)
                 }
             }
             if curStr != "" {
                 if let token = Token(str: curStr) {
                     tokens.append(token)
-                    print(token.XMLTag())
+//                    print(token.XMLTag())
                 } else {
                     throw JackError.tokenize(curStr)
                 }

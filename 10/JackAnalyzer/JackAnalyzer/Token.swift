@@ -48,8 +48,14 @@ enum Token {
     }
 
     func XMLTag() -> String {
+        let escapeTable: [String: String] = [
+            "<": "&lt;",
+            ">": "&gt;",
+            "&": "&amp;",
+        ]
+
         let tagName = XMLTagName()
-        let tag = "<\(tagName)>\(self.value())</\(tagName)>"
+        let tag = "<\(tagName)> \(escapeTable[self.value(), default: self.value()]) </\(tagName)>"
         return tag
     }
 
@@ -60,9 +66,9 @@ enum Token {
         case .symbol:
             return "symbol"
         case .intConst:
-            return "intConst"
+            return "integerConstant"
         case .strConst:
-            return "stringConst"
+            return "stringConstant"
         case .identifier:
             return "identifier"
         }

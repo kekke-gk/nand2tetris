@@ -33,14 +33,31 @@ struct JackAnalyzer: ParsableCommand {
 //            }
 //        }
 
-        let jackTokenizer = JackTokenizer(fileURL: URL(filePath: filePath))
+        let fileURL = URL(filePath: filePath)
+        let stem = fileURL.deletingPathExtension().lastPathComponent
+        let outURL = fileURL.deletingLastPathComponent().appendingPathComponent("\(stem)T_.xml")
+        print(outURL.absoluteString)
+        print(outURL.path())
+
+        FileManager.default.createFile(atPath: outURL.path(), contents: nil)
+
+        let outHandle = try FileHandle(forWritingTo: outURL)
+
+
+        let jackTokenizer = JackTokenizer(fileURL: fileURL)
         do {
             try jackTokenizer.tokenize()
+            outHandle.write("<tokens>\n".data(using: .utf8)!)
             for tokens in jackTokenizer.tokens_list {
                 for token in tokens {
 //                    print(token.XMLTag())
+//                    try token.XMLTag().write(toFile: outURL.absoluteString, atomically: true, encoding: .utf8)
+                    outHandle.write(token.XMLTag().data(using: .utf8)!)
+                    outHandle.write("\n".data(using: .utf8)!)
                 }
             }
+            outHandle.write("</tokens>".data(using: .utf8)!)
+            try outHandle.close()
         } catch JackError.tokenize(let str) {
             print("Tokenize error")
             print(str)
