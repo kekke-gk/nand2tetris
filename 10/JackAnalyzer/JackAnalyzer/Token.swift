@@ -7,75 +7,47 @@
 
 import Foundation
 
-enum Token {
-    case keyword(Keyword)
-    case symbol(Symbol)
-    case intConst(UInt)
-    case strConst(String)
-    case identifier(String)
 
-    init?(str: String) {
-        let regexIdentifier = /^[a-zA-Z_][\w_]*$/
+//    init?(str: String) {
+//        let regexIdentifier = /^[a-zA-Z_][\w_]*$/
+//
+//        if let keyword = Keyword(rawValue: str) {
+//            self = .keyword(keyword)
+//        } else if let symbol = Symbol(rawValue: str) {
+//            self = .symbol(symbol)
+//        } else if let uintValue = UInt(str) {
+//            self = .intConst(uintValue)
+//        } else if str.hasPrefix("\"") && str.hasSuffix("\"") {
+//            self = .strConst(String(str.dropFirst().dropLast()))
+//        } else if str.contains(regexIdentifier) {
+//            self = .identifier(str)
+//        } else {
+//            return nil
+//        }
+//    }
+//
 
-        if let keyword = Keyword(rawValue: str) {
-            self = .keyword(keyword)
-        } else if let symbol = Symbol(rawValue: str) {
-            self = .symbol(symbol)
-        } else if let uintValue = UInt(str) {
-            self = .intConst(uintValue)
-        } else if str.hasPrefix("\"") && str.hasSuffix("\"") {
-            self = .strConst(String(str.dropFirst().dropLast()))
-        } else if str.contains(regexIdentifier) {
-            self = .identifier(str)
-        } else {
-            return nil
-        }
-    }
-
-    func value() -> String {
-        switch self {
-        case .keyword(let keyword):
-            return keyword.rawValue
-        case .symbol(let symbol):
-            return symbol.rawValue
-        case .intConst(let int):
-            return String(int)
-        case .strConst(let str):
-            return str
-        case .identifier(let id):
-            return id
-        }
-    }
-
-    func XMLTag() -> String {
-        let escapeTable: [String: String] = [
-            "<": "&lt;",
-            ">": "&gt;",
-            "&": "&amp;",
-        ]
-
-        let tagName = XMLTagName()
-        let tag = "<\(tagName)> \(escapeTable[self.value(), default: self.value()]) </\(tagName)>"
-        return tag
-    }
-
-    func XMLTagName() -> String {
-        switch self {
-        case .keyword:
-            return "keyword"
-        case .symbol:
-            return "symbol"
-        case .intConst:
-            return "integerConstant"
-        case .strConst:
-            return "stringConstant"
-        case .identifier:
-            return "identifier"
-        }
+func initTerminalElement(_ str: String) -> TerminalElement? {
+    if let keyword = Keyword(str) {
+        return keyword
+    } else if let symbol = Symbol(str) {
+        return symbol
+    } else if let intConst = IntConst(str) {
+        return intConst
+    } else if let strConst = StrConst(str) {
+        return strConst
+    } else if let identifier = Identifier(str) {
+        return identifier
+    } else {
+        return nil
     }
 }
 
-enum Keyword: String, CaseIterable {
+enum Keyword: String, CaseIterable, TerminalElement {
+    var name: String {
+        return "keyword"
+    }
+
     case class_ = "class"
     case constructor_ = "constructor"
     case function_ = "function"
@@ -98,12 +70,22 @@ enum Keyword: String, CaseIterable {
     case while_ = "while"
     case return_ = "return"
 
-    static let allValues = {() -> [String] in
-        return allCases.map { $0.rawValue }
-    }()
+    init?(_ str: String) {
+        self.init(rawValue: str)
+    }
+
+    func value() -> String {
+        return self.rawValue
+    }
+
+    static let allValues = allCases.map(\.rawValue)
 }
 
-enum Symbol: String, CaseIterable {
+enum Symbol: String, CaseIterable, TerminalElement {
+    var name: String {
+        return "symbol"
+    }
+
     case curlyBracketL = "{"
     case curlyBracketR = "}"
     case bracketL = "("
@@ -124,7 +106,75 @@ enum Symbol: String, CaseIterable {
     case equal = "="
     case tilde = "~"
 
-    static let allValues = {() -> [String] in
-        return allCases.map { $0.rawValue }
-    }()
+    init?(_ str: String) {
+        self.init(rawValue: str)
+    }
+
+    func value() -> String {
+        return self.rawValue
+    }
+
+    static let allValues = allCases.map(\.rawValue)
+}
+
+struct IntConst: TerminalElement {
+    var name: String {
+        return "integerConstant"
+    }
+
+    let intValue: Int
+
+    init?(_ str: String) {
+        if let int = Int(str) {
+            self.intValue = int
+        } else {
+            return nil
+        }
+    }
+
+    func value() -> String {
+        return String(intValue)
+    }
+}
+
+struct StrConst: TerminalElement {
+    var name: String {
+        return "stringConstant"
+    }
+
+    let strValue: String
+
+    init?(_ str: String) {
+        if str.hasPrefix("\"") && str.hasSuffix("\"") {
+            self.strValue = String(str.dropFirst().dropLast())
+        } else {
+            return nil
+        }
+    }
+
+    func value() -> String {
+        return strValue
+    }
+}
+
+struct Identifier: TerminalElement {
+    var name: String {
+        return "identifier"
+    }
+
+    let identifier: String
+
+    init?(_ str: String) {
+        let regexIdentifier = /^[a-zA-Z_][\w_]*$/
+
+        if str.contains(regexIdentifier) {
+            self.identifier = str
+        } else {
+            return nil
+        }
+    }
+
+    func value() -> String {
+        return identifier
+    }
 }

@@ -9,7 +9,7 @@ import Foundation
 
 class JackTokenizer {
     let lines: [String]
-    var tokens_list: [[Token]] = []
+    var tokens_list: [[TerminalElement]] = []
 
     let delimiters = {() -> [String] in
         return Symbol.allValues + [" "]
@@ -33,7 +33,7 @@ class JackTokenizer {
         var inString = false
         for line in lines {
 //            print(line)
-            var tokens: [Token] = []
+            var tokens: [TerminalElement] = []
             var curStr: String = ""
             let l = Array(line.trimmingCharacters(in: .whitespacesAndNewlines))
             for (i, c) in l.enumerated() {
@@ -56,7 +56,7 @@ class JackTokenizer {
                     if c == "\"" {
                         inString = false
                         curStr += String(c)
-                        if let token = Token(str: curStr) {
+                        if let token = initTerminalElement(curStr) {
                             tokens.append(token)
 //                            print(token.XMLTag())
                         } else {
@@ -72,14 +72,14 @@ class JackTokenizer {
                 }
 
                 if curStr != "" && delimiters.contains(String(c)) {
-                    if let token = Token(str: curStr) {
+                    if let token = initTerminalElement(curStr) {
                         tokens.append(token)
 //                        print(token.XMLTag())
                     } else {
                         throw JackError.tokenize(curStr)
                     }
                     if Symbol.allValues.contains(String(c)) {
-                        if let token = Token(str: String(c)) {
+                        if let token = initTerminalElement(String(c)) {
                             tokens.append(token)
 //                            print(token.XMLTag())
                         } else {
@@ -93,7 +93,7 @@ class JackTokenizer {
                     curStr += String(c)
                     inString = true
                 } else if Symbol.allValues.contains(String(c)) {
-                    if let token = Token(str: String(c)) {
+                    if let token = initTerminalElement(String(c)) {
                         tokens.append(token)
 //                        print(token.XMLTag())
                     } else {
@@ -104,7 +104,7 @@ class JackTokenizer {
                 }
             }
             if curStr != "" {
-                if let token = Token(str: curStr) {
+                if let token = initTerminalElement(curStr) {
                     tokens.append(token)
 //                    print(token.XMLTag())
                 } else {

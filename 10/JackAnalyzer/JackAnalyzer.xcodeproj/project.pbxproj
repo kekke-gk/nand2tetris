@@ -12,6 +12,7 @@
 		E71AB9012B95A26C00F8A64D /* JackTokenizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = E71AB9002B95A26C00F8A64D /* JackTokenizer.swift */; };
 		E71AB9032B970DC600F8A64D /* Token.swift in Sources */ = {isa = PBXBuildFile; fileRef = E71AB9022B970DC600F8A64D /* Token.swift */; };
 		E71AB9052B9896CF00F8A64D /* JackError.swift in Sources */ = {isa = PBXBuildFile; fileRef = E71AB9042B9896CF00F8A64D /* JackError.swift */; };
+		E71AB9142B9B7C8200F8A64D /* CompilationEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = E71AB9132B9B7C8200F8A64D /* CompilationEngine.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -32,6 +33,7 @@
 		E71AB9002B95A26C00F8A64D /* JackTokenizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JackTokenizer.swift; sourceTree = "<group>"; };
 		E71AB9022B970DC600F8A64D /* Token.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Token.swift; sourceTree = "<group>"; };
 		E71AB9042B9896CF00F8A64D /* JackError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JackError.swift; sourceTree = "<group>"; };
+		E71AB9132B9B7C8200F8A64D /* CompilationEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompilationEngine.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -69,6 +71,7 @@
 				E71AB9002B95A26C00F8A64D /* JackTokenizer.swift */,
 				E71AB9022B970DC600F8A64D /* Token.swift */,
 				E71AB9042B9896CF00F8A64D /* JackError.swift */,
+				E71AB9132B9B7C8200F8A64D /* CompilationEngine.swift */,
 			);
 			path = JackAnalyzer;
 			sourceTree = "<group>";
@@ -159,6 +162,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				E71AB9032B970DC600F8A64D /* Token.swift in Sources */,
+				E71AB9142B9B7C8200F8A64D /* CompilationEngine.swift in Sources */,
 				E71AB9052B9896CF00F8A64D /* JackError.swift in Sources */,
 				E71AB9012B95A26C00F8A64D /* JackTokenizer.swift in Sources */,
 				E71AB8F32B9596B500F8A64D /* JackAnalyzer.swift in Sources */,

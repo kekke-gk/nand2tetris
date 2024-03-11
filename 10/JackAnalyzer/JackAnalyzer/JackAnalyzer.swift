@@ -52,7 +52,7 @@ struct JackAnalyzer: ParsableCommand {
                 for token in tokens {
 //                    print(token.XMLTag())
 //                    try token.XMLTag().write(toFile: outURL.absoluteString, atomically: true, encoding: .utf8)
-                    outHandle.write(token.XMLTag().data(using: .utf8)!)
+                    outHandle.write("\(token)".data(using: .utf8)!)
                     outHandle.write("\n".data(using: .utf8)!)
                 }
             }
