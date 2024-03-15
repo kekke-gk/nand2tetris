@@ -23,16 +23,43 @@ struct JackAnalyzer: ParsableCommand {
     var filePath: String
 
     mutating func run() throws {
-//        let repeatCount = count ?? 2
-//
-//        for i in 1...repeatCount {
-//            if includeCounter {
-//                print("\(i): \(phrase)")
-//            } else {
-//                print(phrase)
-//            }
-//        }
+//        try tokenize()
+        try compile()
+    }
 
+    func compile() throws {
+        let fileURL = URL(filePath: filePath)
+        let stem = fileURL.deletingPathExtension().lastPathComponent
+        let outURL = fileURL.deletingLastPathComponent().appendingPathComponent("\(stem)_.xml")
+        print(outURL.absoluteString)
+        print(outURL.path())
+
+        FileManager.default.createFile(atPath: outURL.path(), contents: nil)
+
+        let outHandle = try FileHandle(forWritingTo: outURL)
+
+        let jackTokenizer = JackTokenizer(fileURL: fileURL)
+        do {
+            try jackTokenizer.tokenize()
+
+            let compilationEngine = CompilationEngine(tokensList: jackTokenizer.tokensList)
+            compilationEngine.compile()
+
+//            for tokens in jackTokenizer.tokensList {
+//                for token in tokens {
+//                    outHandle.write("\(token)".data(using: .utf8)!)
+//                    outHandle.write("\n".data(using: .utf8)!)
+//                }
+//            }
+            try outHandle.close()
+        } catch JackError.tokenize(let str) {
+            print("Tokenize error")
+            print(str)
+        }
+
+    }
+
+    func tokenize() throws {
         let fileURL = URL(filePath: filePath)
         let stem = fileURL.deletingPathExtension().lastPathComponent
         let outURL = fileURL.deletingLastPathComponent().appendingPathComponent("\(stem)T_.xml")
@@ -43,12 +70,11 @@ struct JackAnalyzer: ParsableCommand {
 
         let outHandle = try FileHandle(forWritingTo: outURL)
 
-
         let jackTokenizer = JackTokenizer(fileURL: fileURL)
         do {
             try jackTokenizer.tokenize()
             outHandle.write("<tokens>\n".data(using: .utf8)!)
-            for tokens in jackTokenizer.tokens_list {
+            for tokens in jackTokenizer.tokensList {
                 for token in tokens {
 //                    print(token.XMLTag())
 //                    try token.XMLTag().write(toFile: outURL.absoluteString, atomically: true, encoding: .utf8)

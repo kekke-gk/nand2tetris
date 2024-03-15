@@ -74,6 +74,27 @@ enum Keyword: String, CaseIterable, TerminalElement {
         self.init(rawValue: str)
     }
 
+    init?(_ context: Context) {
+        self.init(context.currentToken.value())
+        _ = context.next()
+    }
+
+    init?(_ context: Context, keywords: [Keyword]) {
+        if keywords.isEmpty {
+            self.init(context)
+            return
+        }
+
+        if let keyword = context.currentToken as? Keyword {
+            if keywords.contains(keyword) {
+                self.init(context)
+                return
+            }
+        }
+
+        return nil
+    }
+
     func value() -> String {
         return self.rawValue
     }
@@ -110,6 +131,27 @@ enum Symbol: String, CaseIterable, TerminalElement {
         self.init(rawValue: str)
     }
 
+    init?(_ context: Context) {
+        self.init(context.currentToken.value())
+        _ = context.next()
+    }
+
+    init?(_ context: Context, symbols: [Symbol]) {
+        if symbols.isEmpty {
+            self.init(context)
+            return
+        }
+
+        if let symbol = context.currentToken as? Symbol {
+            if symbols.contains(symbol) {
+                self.init(context)
+                return
+            }
+        }
+
+        return nil
+    }
+
     func value() -> String {
         return self.rawValue
     }
@@ -132,6 +174,11 @@ struct IntConst: TerminalElement {
         }
     }
 
+    init?(_ context: Context) {
+        self.init(context.currentToken.value())
+        _ = context.next()
+    }
+
     func value() -> String {
         return String(intValue)
     }
@@ -150,6 +197,11 @@ struct StrConst: TerminalElement {
         } else {
             return nil
         }
+    }
+
+    init?(_ context: Context) {
+        self.init(context.currentToken.value())
+        _ = context.next()
     }
 
     func value() -> String {
@@ -172,6 +224,11 @@ struct Identifier: TerminalElement {
         } else {
             return nil
         }
+    }
+
+    init?(_ context: Context) {
+        self.init(context.currentToken.value())
+        _ = context.next()
     }
 
     func value() -> String {

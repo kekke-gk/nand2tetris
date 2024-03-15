@@ -9,7 +9,7 @@ import Foundation
 
 class JackTokenizer {
     let lines: [String]
-    var tokens_list: [[TerminalElement]] = []
+    var tokensList: [[TerminalElement]] = []
 
     let delimiters = {() -> [String] in
         return Symbol.allValues + [" "]
@@ -111,7 +111,7 @@ class JackTokenizer {
                     throw JackError.tokenize(curStr)
                 }
             }
-            self.tokens_list.append(tokens)
+            self.tokensList.append(tokens)
         }
     }
 }
