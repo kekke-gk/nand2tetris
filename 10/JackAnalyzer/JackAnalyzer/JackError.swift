@@ -9,4 +9,5 @@ import Foundation
 
 enum JackError: Error {
     case tokenize(String)
+    case compile(Int, String)
 }

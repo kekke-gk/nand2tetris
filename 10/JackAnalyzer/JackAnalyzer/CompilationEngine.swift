@@ -18,8 +18,12 @@ class CompilationEngine {
         do {
             let element = try Expression(context)
             print(element!)
-        } catch {
+        } catch JackError.compile(let lineNum, let message) {
             print("Compile Error")
+            print(lineNum)
+            print(message)
+        } catch {
+            print("Other Error")
         }
     }
 }
@@ -75,6 +79,10 @@ class Context {
 }
 
 struct Expression: NonTerminalElement {
+    func compile(_ context: Context) throws -> [any Element] {
+        return []
+    }
+    
     var elements: [any Element] = []
 
     var name: String {
@@ -82,18 +90,22 @@ struct Expression: NonTerminalElement {
     }
 
     init?(_ context: Context) throws {
-        if let term = try Term(context) {
-            elements.append(term)
-            while let symbol = Symbol(context, symbols: [.plus, .minus, .asterisk, .slash, .and, .or, .angleBracketL, .angleBracketR, .equal]) {
-                if let term2 = try Term(context) {
-                    elements.append(symbol)
-                    elements.append(term2)
-                }
-            }
-            return
-        }
+        do {
+            if let term = try Term(context) {
+                elements.append(term)
 
-        throw JackError.tokenize(name)
+                while let symbol = Symbol(context, symbols: [.plus, .minus, .asterisk, .slash, .and, .or, .angleBracketL, .angleBracketR, .equal]) {
+                    elements += [
+                        symbol,
+                        try Term(context)!,
+                    ]
+                }
+                return
+            }
+        } catch {
+            throw JackError.compile(context.currentLine, name)
+        }
+        throw JackError.compile(context.currentLine, name)
     }
 }
 
@@ -105,18 +117,22 @@ struct ExpressionList: NonTerminalElement {
     }
 
     init?(_ context: Context) throws {
-        if let expression = try Expression(context) {
-            elements.append(expression)
+        do {
+            if let expression = try Expression(context) {
+                elements.append(expression)
 
-            while let symbol = Symbol(context, symbols: [.comma]) {
-                if let expression2 = try Expression(context) {
-                    elements.append(symbol)
-                    elements.append(expression2)
+                while let symbol = Symbol(context, symbols: [.comma]) {
+                    elements += [
+                        symbol,
+                        try Expression(context)!,
+                    ]
                 }
             }
-        }
 
-        return
+            return
+        } catch {
+            throw JackError.compile(context.currentLine, name)
+        }
     }
 }
 
@@ -128,81 +144,71 @@ struct Term: NonTerminalElement {
     }
 
     init?(_ context: Context) throws {
-        if let element = IntConst(context) {
-            elements.append(element)
-            return
-        }
-
-        if let element = StrConst(context) {
-            elements.append(element)
-            return
-        }
-
-        if let element = Keyword(context, keywords: [.true_, .false_, .null_, .this_]) {
-            elements.append(element)
-            return
-        }
-
-        if let identifier = Identifier(context) {
-            if let symbol = Symbol(context, symbols: [.squareBracketL]) {
-                if let expression = try Expression(context) {
-                    if let symbol2 = Symbol(context, symbols: [.squareBracketR]) {
-                        elements.append(identifier)
-                        elements.append(symbol)
-                        elements.append(expression)
-                        elements.append(symbol2)
-                        return
-                    }
-                }
-            } else if let symbol = Symbol(context, symbols: [.bracketL]) {
-                if let expressionList = try ExpressionList(context) {
-                    if let symbol2 = Symbol(context, symbols: [.bracketR]) {
-                        elements.append(identifier)
-                        elements.append(symbol)
-                        elements.append(expressionList)
-                        elements.append(symbol2)
-                        return
-                    }
-                }
-            } else if let symbol = Symbol(context, symbols: [.period]) {
-                if let identifier2 = Identifier(context) {
-                    if let symbol2 = Symbol(context, symbols: [.bracketL]) {
-                        if let expressionList = try ExpressionList(context) {
-                            if let symbol3 = Symbol(context, symbols: [.bracketR]) {
-                                elements.append(identifier)
-                                elements.append(symbol)
-                                elements.append(identifier2)
-                                elements.append(symbol2)
-                                elements.append(expressionList)
-                                elements.append(symbol3)
-                                return
-                            }
-                        }
-                    }
-
-                }
+        do {
+            if let element = IntConst(context) {
+                elements = [element]
+                return
             }
-        }
 
-        if let symbol = Symbol(context, symbols: [.bracketL]) {
-            if let expression = try Expression(context) {
-                if let symbol2 = Symbol(context, symbols: [.bracketR]) {
-                    elements.append(symbol)
-                    elements.append(expression)
-                    elements.append(symbol2)
+            if let element = StrConst(context) {
+                elements = [element]
+                return
+            }
+
+            if let element = Keyword(context, keywords: [.true_, .false_, .null_, .this_]) {
+                elements = [element]
+                return
+            }
+
+            if let identifier = Identifier(context) {
+                if let symbol = Symbol(context, symbols: [.squareBracketL]) {
+                    elements = [
+                        identifier,
+                        symbol,
+                        try Expression(context)!,
+                        Symbol(context, symbols: [.squareBracketR])!,
+                    ]
+                    return
+                } else if let symbol = Symbol(context, symbols: [.bracketL]) {
+                    elements = [
+                        identifier,
+                        symbol,
+                        try ExpressionList(context)!,
+                        Symbol(context, symbols: [.bracketR])!,
+                    ]
+                    return
+                } else if let symbol = Symbol(context, symbols: [.period]) {
+                    elements = [
+                        identifier,
+                        symbol,
+                        Identifier(context)!,
+                        Symbol(context, symbols: [.bracketL])!,
+                        try ExpressionList(context)!,
+                        Symbol(context, symbols: [.bracketL])!,
+                    ]
                     return
                 }
             }
-        }
 
-        if let symbol = Symbol(context, symbols: [.minus, .tilde]) {
-            if let term = try Term(context) {
-                elements.append(symbol)
-                elements.append(term)
+            if let symbol = Symbol(context, symbols: [.bracketL]) {
+                elements = [
+                    symbol,
+                    try Expression(context)!,
+                    Symbol(context, symbols: [.bracketR])!,
+                ]
                 return
             }
-        }
 
-        throw JackError.tokenize("term")
+            if let symbol = Symbol(context, symbols: [.minus, .tilde]) {
+                elements = [
+                    symbol,
+                    try Term(context)!,
+                ]
+                return
+            }
+        } catch {
+            throw JackError.compile(context.currentLine, name)
+        }
+        throw JackError.compile(context.currentLine, name)
     }
 }
