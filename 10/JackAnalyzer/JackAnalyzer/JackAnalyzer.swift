@@ -42,6 +42,12 @@ struct JackAnalyzer: ParsableCommand {
         do {
             try jackTokenizer.tokenize()
 
+            for tokens in jackTokenizer.tokensList {
+                for token in tokens {
+                    print(token)
+                }
+            }
+
             let compilationEngine = CompilationEngine(tokensList: jackTokenizer.tokensList)
             compilationEngine.compile()
 
