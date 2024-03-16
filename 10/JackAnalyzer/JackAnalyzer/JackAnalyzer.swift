@@ -50,13 +50,7 @@ struct JackAnalyzer: ParsableCommand {
 
             let compilationEngine = CompilationEngine(tokensList: jackTokenizer.tokensList)
             compilationEngine.compile()
-
-//            for tokens in jackTokenizer.tokensList {
-//                for token in tokens {
-//                    outHandle.write("\(token)".data(using: .utf8)!)
-//                    outHandle.write("\n".data(using: .utf8)!)
-//                }
-//            }
+            outHandle.write(String(describing: compilationEngine.element!).data(using: .utf8)!)
             try outHandle.close()
         } catch JackError.tokenize(let str) {
             print("Tokenize error")

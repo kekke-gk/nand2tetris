@@ -200,8 +200,12 @@ struct StrConst: TerminalElement {
     }
 
     init?(_ context: Context) {
-        self.init(context.currentToken.value())
-        _ = context.next()
+        if let element = context.currentToken as? StrConst {
+            self = element
+            _ = context.next()
+        } else {
+            return nil
+        }
     }
 
     func value() -> String {

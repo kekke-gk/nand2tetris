@@ -14,6 +14,9 @@
 		E71AB9052B9896CF00F8A64D /* JackError.swift in Sources */ = {isa = PBXBuildFile; fileRef = E71AB9042B9896CF00F8A64D /* JackError.swift */; };
 		E71AB9142B9B7C8200F8A64D /* CompilationEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = E71AB9132B9B7C8200F8A64D /* CompilationEngine.swift */; };
 		E78C78D72B9F5DB00094D02B /* Element.swift in Sources */ = {isa = PBXBuildFile; fileRef = E78C78D62B9F5DB00094D02B /* Element.swift */; };
+		E7A78B362BA4B52800F82B85 /* Expressions.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7A78B352BA4B52800F82B85 /* Expressions.swift */; };
+		E7A78B382BA4B53300F82B85 /* Statements.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7A78B372BA4B53300F82B85 /* Statements.swift */; };
+		E7A78B3A2BA4B54500F82B85 /* ProgramStructure.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7A78B392BA4B54500F82B85 /* ProgramStructure.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -36,6 +39,9 @@
 		E71AB9042B9896CF00F8A64D /* JackError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JackError.swift; sourceTree = "<group>"; };
 		E71AB9132B9B7C8200F8A64D /* CompilationEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompilationEngine.swift; sourceTree = "<group>"; };
 		E78C78D62B9F5DB00094D02B /* Element.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Element.swift; sourceTree = "<group>"; };
+		E7A78B352BA4B52800F82B85 /* Expressions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Expressions.swift; sourceTree = "<group>"; };
+		E7A78B372BA4B53300F82B85 /* Statements.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Statements.swift; sourceTree = "<group>"; };
+		E7A78B392BA4B54500F82B85 /* ProgramStructure.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgramStructure.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -69,14 +75,25 @@
 		E71AB8F12B9596B500F8A64D /* JackAnalyzer */ = {
 			isa = PBXGroup;
 			children = (
+				E7A78B3B2BA53B4000F82B85 /* Grammer */,
 				E71AB8F22B9596B500F8A64D /* JackAnalyzer.swift */,
 				E71AB9002B95A26C00F8A64D /* JackTokenizer.swift */,
-				E71AB9022B970DC600F8A64D /* Token.swift */,
 				E71AB9042B9896CF00F8A64D /* JackError.swift */,
 				E71AB9132B9B7C8200F8A64D /* CompilationEngine.swift */,
-				E78C78D62B9F5DB00094D02B /* Element.swift */,
 			);
 			path = JackAnalyzer;
+			sourceTree = "<group>";
+		};
+		E7A78B3B2BA53B4000F82B85 /* Grammer */ = {
+			isa = PBXGroup;
+			children = (
+				E78C78D62B9F5DB00094D02B /* Element.swift */,
+				E71AB9022B970DC600F8A64D /* Token.swift */,
+				E7A78B392BA4B54500F82B85 /* ProgramStructure.swift */,
+				E7A78B372BA4B53300F82B85 /* Statements.swift */,
+				E7A78B352BA4B52800F82B85 /* Expressions.swift */,
+			);
+			name = Grammer;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -167,9 +184,12 @@
 				E71AB9032B970DC600F8A64D /* Token.swift in Sources */,
 				E71AB9142B9B7C8200F8A64D /* CompilationEngine.swift in Sources */,
 				E78C78D72B9F5DB00094D02B /* Element.swift in Sources */,
+				E7A78B382BA4B53300F82B85 /* Statements.swift in Sources */,
 				E71AB9052B9896CF00F8A64D /* JackError.swift in Sources */,
 				E71AB9012B95A26C00F8A64D /* JackTokenizer.swift in Sources */,
 				E71AB8F32B9596B500F8A64D /* JackAnalyzer.swift in Sources */,
+				E7A78B362BA4B52800F82B85 /* Expressions.swift in Sources */,
+				E7A78B3A2BA4B54500F82B85 /* ProgramStructure.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
