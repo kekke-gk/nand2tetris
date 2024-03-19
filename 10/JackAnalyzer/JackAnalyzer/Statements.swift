@@ -47,7 +47,6 @@ struct LetStatement: NonTerminalElement {
     }
 
     init?(_ context: Context) throws {
-        print(context)
         do {
             elements = [
                 Keyword(context, keywords: [.let_])!,
@@ -62,16 +61,9 @@ struct LetStatement: NonTerminalElement {
                 ]
             }
 
-            print(context)
             elements += [
                 Symbol(context, symbols: [.equal])!,
-                ]
-            print(context)
-            elements += [
                 try Expression(context)!,
-                ]
-            print(context)
-            elements += [
                 Symbol(context, symbols: [.semicolon])!,
             ]
         } catch {

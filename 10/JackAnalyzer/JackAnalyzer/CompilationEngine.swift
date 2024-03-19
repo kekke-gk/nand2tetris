@@ -18,8 +18,6 @@ class CompilationEngine {
     func compile() {
         do {
             element = try Class(context)
-
-            print(element!)
         } catch JackError.compile(let lineNum, let message) {
             print("Compile Error")
             print(lineNum)

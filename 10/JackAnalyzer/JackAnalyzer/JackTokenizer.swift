@@ -18,8 +18,6 @@ class JackTokenizer {
     init(fileURL: URL) {
         do {
             let textRead = try String(contentsOfFile: fileURL.relativePath, encoding: .utf8)
-            print("ファイル読み込み成功")
-            print(textRead)
             lines = textRead.components(separatedBy: "\n")
         } catch {
             print("ファイル読み込み失敗")
@@ -32,7 +30,6 @@ class JackTokenizer {
         var inComment = false
         var inString = false
         for line in lines {
-//            print(line)
             var tokens: [TerminalElement] = []
             var curStr: String = ""
             let l = Array(line.trimmingCharacters(in: .whitespacesAndNewlines))
@@ -58,7 +55,6 @@ class JackTokenizer {
                         curStr += String(c)
                         if let token = initTerminalElement(curStr) {
                             tokens.append(token)
-//                            print(token.XMLTag())
                         } else {
                             throw JackError.tokenize(curStr)
                         }
@@ -74,14 +70,12 @@ class JackTokenizer {
                 if curStr != "" && delimiters.contains(String(c)) {
                     if let token = initTerminalElement(curStr) {
                         tokens.append(token)
-//                        print(token.XMLTag())
                     } else {
                         throw JackError.tokenize(curStr)
                     }
                     if Symbol.allValues.contains(String(c)) {
                         if let token = initTerminalElement(String(c)) {
                             tokens.append(token)
-//                            print(token.XMLTag())
                         } else {
                             throw JackError.tokenize(String(c))
                         }
@@ -106,7 +100,6 @@ class JackTokenizer {
             if curStr != "" {
                 if let token = initTerminalElement(curStr) {
                     tokens.append(token)
-//                    print(token.XMLTag())
                 } else {
                     throw JackError.tokenize(curStr)
                 }
