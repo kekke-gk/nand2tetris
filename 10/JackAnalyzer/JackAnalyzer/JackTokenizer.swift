@@ -49,7 +49,7 @@ class JackTokenizer {
             
             let l = Array(line.trimmingCharacters(in: .whitespacesAndNewlines)).map { String($0) }
             for (i, c) in l.enumerated() {
-                if inComment && l[i-1] == "*" && c == "/" {
+                if inComment && 0 <= i-1 && l[i-1] == "*" && c == "/" {
                     inComment = false
                     continue
                 }
