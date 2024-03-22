@@ -10,12 +10,12 @@ import Foundation
 class JackTokenizer {
     let lines: [String]
     var tokensList: [[any TerminalElement]] = []
-
+    
     var inComment = false
     var inString = false
     var tokens: [any TerminalElement] = []
     var curStr: String = ""
-
+    
     init(fileURL: URL) throws {
         do {
             let textRead = try String(contentsOfFile: fileURL.relativePath, encoding: .utf8)
@@ -24,7 +24,7 @@ class JackTokenizer {
             throw JackError.failedToOpenFile(fileURL)
         }
     }
-
+    
     private func appendToken() throws {
         guard curStr.trimmingCharacters(in: .whitespaces) != "" else {
             return
@@ -36,15 +36,15 @@ class JackTokenizer {
         }
         curStr = ""
     }
-
+    
     func tokenize() throws {
         inComment = false
         inString = false
-
+        
         for line in lines {
             tokens = []
             curStr = ""
-
+            
             let l = Array(line.trimmingCharacters(in: .whitespacesAndNewlines)).map { String($0) }
             for (i, c) in l.enumerated() {
                 if inComment && l[i-1] == "*" && c == "/" {
@@ -63,7 +63,7 @@ class JackTokenizer {
                         break
                     }
                 }
-
+                
                 if inString {
                     curStr += c
                     if c == "\"" {
@@ -72,7 +72,7 @@ class JackTokenizer {
                     }
                     continue
                 }
-
+                
                 switch c {
                 case " ":
                     try appendToken()

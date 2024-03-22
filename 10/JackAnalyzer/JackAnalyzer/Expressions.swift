@@ -9,136 +9,74 @@ import Foundation
 
 struct Expression: NonTerminalElement {
     var elements: [any Element] = []
-
+    init() {}
+    
     var name: String {
         return "expression"
     }
-
-    init(_ context: Context) throws {
-        do {
-            if let term = try Term(context) {
-                elements.append(term)
-
-                while let symbol = Symbol(context, filters: [.plus, .minus, .asterisk, .slash, .and, .or, .angleBracketL, .angleBracketR, .equal]) {
-                    elements += [
-                        symbol,
-                        try Term(context)!,
-                    ]
-                }
-                return
-            }
-
-            return nil
-        } catch {
-            print(context.currentLine, name, context.currentToken)
-            throw JackError.compile(context.currentLine, name)
+    
+    mutating func compile(_ context: Context) throws {
+        try must(context, Term.self)
+        
+        while may(context, [Symbol.plus, .minus, .asterisk, .slash, .and, .or, .angleBracketL, .angleBracketR, .equal]) {
+            try must(context, Term.self)
         }
     }
 }
 
 struct ExpressionList: NonTerminalElement {
     var elements: [any Element] = []
-
+    init() {}
+    
     var name: String {
         return "expressionList"
     }
-
-    init(_ context: Context) throws {
-        do {
-            if let expression = try Expression(context) {
-                elements.append(expression)
-
-                while let symbol = Symbol(context, filters: [.comma]) {
-                    elements += [
-                        symbol,
-                        try Expression(context)!,
-                    ]
-                }
+    
+    mutating func compile(_ context: Context) throws {
+        if may(context, Expression.self) {
+            while may(context, [Symbol.comma]) {
+                try must(context, Expression.self)
             }
-
-            return
-        } catch {
-            print(context.currentLine, name, context.currentToken)
-            throw JackError.compile(context.currentLine, name)
         }
     }
 }
 
 struct Term: NonTerminalElement {
     var elements: [any Element] = []
-
+    init() {}
+    
     var name: String {
         return "term"
     }
-
-    init(_ context: Context) throws {
-        do {
-            if let element = IntConst(context) {
-                elements = [element]
-                return
+    
+    mutating func compile(_ context: Context) throws {
+        if may(context, IntConst.self) { return }
+        if may(context, StrConst.self) { return }
+        if may(context, [Keyword.true_, .false_, .null_, .this_]) { return }
+        
+        if may(context, Identifier.self) {
+            if may(context, [Symbol.squareBracketL]) {
+                try must(context, Expression.self)
+                try must(context, [Symbol.squareBracketR])
+            } else if may(context, [Symbol.bracketL]) {
+                try must(context, ExpressionList.self)
+                try must(context, [Symbol.bracketR])
+            } else if may(context, [Symbol.period]) {
+                try must(context, Identifier.self)
+                try must(context, [Symbol.bracketL])
+                try must(context, ExpressionList.self)
+                try must(context, [Symbol.bracketR])
             }
-
-            if let element = StrConst(context) {
-                elements = [element]
-                return
-            }
-
-            if let element = Keyword(context, filters: [.true_, .false_, .null_, .this_]) {
-                elements = [element]
-                return
-            }
-
-            if let identifier = Identifier(context) {
-                elements.append(identifier)
-                if let symbol = Symbol(context, filters: [.squareBracketL]) {
-                    elements += [
-                        symbol,
-                        try Expression(context)!,
-                        Symbol(context, filters: [.squareBracketR])!,
-                    ]
-                    return
-                } else if let symbol = Symbol(context, filters: [.bracketL]) {
-                    elements += [
-                        symbol,
-                        try ExpressionList(context)!,
-                        Symbol(context, filters: [.bracketR])!,
-                    ]
-                    return
-                } else if let symbol = Symbol(context, filters: [.period]) {
-                    elements += [
-                        symbol,
-                        Identifier(context)!,
-                        Symbol(context, filters: [.bracketL])!,
-                        try ExpressionList(context)!,
-                        Symbol(context, filters: [.bracketR])!,
-                    ]
-                    return
-                } else {
-                    return
-                }
-            }
-
-            if let symbol = Symbol(context, filters: [.bracketL]) {
-                elements = [
-                    symbol,
-                    try Expression(context)!,
-                    Symbol(context, filters: [.bracketR])!,
-                ]
-                return
-            }
-
-            if let symbol = Symbol(context, filters: [.minus, .tilde]) {
-                elements = [
-                    symbol,
-                    try Term(context)!,
-                ]
-                return
-            }
-
-            return nil
-        } catch {
-            print(context.currentLine, name, context.currentToken)
-            throw JackError.compile(context.currentLine, name)
+            return
         }
+        
+        if may(context, [Symbol.bracketL]) {
+            try must(context, Expression.self)
+            try must(context, [Symbol.bracketR])
+            return
+        }
+        
+        try must(context, [Symbol.minus, .tilde])
+        try must(context, Term.self)
     }
 }
