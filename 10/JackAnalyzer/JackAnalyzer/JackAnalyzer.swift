@@ -29,8 +29,8 @@ struct JackAnalyzer: ParsableCommand {
         let outTHandle = try FileHandle(forWritingTo: outTURL)
         let outHandle = try FileHandle(forWritingTo: outURL)
 
-        let jackTokenizer = JackTokenizer(fileURL: fileURL)
         do {
+            let jackTokenizer = try JackTokenizer(fileURL: fileURL)
             try jackTokenizer.tokenize()
             print("Tokenization ended successfully")
 
@@ -52,6 +52,9 @@ struct JackAnalyzer: ParsableCommand {
             outHandle.write(String(describing: compilationEngine.element!).data(using: .utf8)!)
             try outHandle.close()
             print("Wrote to \(outURL.path())")
+        } catch JackError.failedToOpenFile(let fileURL) {
+            print("[Error] Failed to open file")
+            print(fileURL.relativePath)
         } catch JackError.tokenize(let str) {
             print("Tokenize error")
             print(str)

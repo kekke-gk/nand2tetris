@@ -14,11 +14,11 @@ struct Class: NonTerminalElement {
         return "class"
     }
 
-    init?(_ context: Context) throws {
+    init(_ context: Context) throws {
         do {
-            elements.append(Keyword(context, keywords: [.class_])!)
+            elements.append(Keyword(context, filters: [.class_])!)
             elements.append(Identifier(context)!)
-            elements.append(Symbol(context, symbols: [.curlyBracketL])!)
+            elements.append(Symbol(context, filters: [.curlyBracketL])!)
 
             while [.static_, .field_].contains(context.currentToken as? Keyword) {
                 elements.append(try ClassVarDec(context)!)
@@ -28,7 +28,7 @@ struct Class: NonTerminalElement {
                 elements.append(try SubroutineDec(context)!)
             }
 
-            elements.append(Symbol(context, symbols: [.curlyBracketR])!)
+            elements.append(Symbol(context, filters: [.curlyBracketR])!)
         } catch {
             print(context.currentLine, name, context.currentToken)
             throw JackError.compile(context.currentLine, name)
@@ -43,11 +43,11 @@ struct ClassVarDec: NonTerminalElement {
         return "classVarDec"
     }
 
-    init?(_ context: Context) throws {
+    init(_ context: Context) throws {
         do {
-            elements.append(Keyword(context, keywords: [.static_, .field_])!)
+            elements.append(Keyword(context, filters: [.static_, .field_])!)
 
-            if let keyword = Keyword(context, keywords: [.int_, .char_, .boolean_]) {
+            if let keyword = Keyword(context, filters: [.int_, .char_, .boolean_]) {
                 elements.append(keyword)
             } else if let identifier = Identifier(context) {
                 elements.append(identifier)
@@ -58,16 +58,32 @@ struct ClassVarDec: NonTerminalElement {
 
             elements.append(Identifier(context)!)
 
-            while let symbol = Symbol(context, symbols: [.comma]) {
+            while let symbol = Symbol(context, filters: [.comma]) {
                 elements += [
                     symbol,
                     Identifier(context)!,
                 ]
             }
-            elements.append(Symbol(context, symbols: [.semicolon])!)
+            elements.append(Symbol(context, filters: [.semicolon])!)
         } catch {
             print(context.currentLine, name, context.currentToken)
             throw JackError.compile(context.currentLine, name)
+        }
+    }
+}
+
+struct Typea: NonTerminalTagLessElement {
+    var elements: [any Element] = []
+    init() {}
+
+    var name: String {
+        return ""
+    }
+
+    mutating func compile(_ context: Context) throws {
+        if may(Keyword(context, filters: [.int_, .char_, .boolean_])) {
+        } else {
+            try must(Identifier(context))
         }
     }
 }
@@ -79,11 +95,11 @@ struct SubroutineDec: NonTerminalElement {
         return "subroutineDec"
     }
 
-    init?(_ context: Context) throws {
+    init(_ context: Context) throws {
         do {
-            elements.append(Keyword(context, keywords: [.constructor_, .function_, .method_])!)
+            elements.append(Keyword(context, filters: [.constructor_, .function_, .method_])!)
 
-            if let keyword = Keyword(context, keywords: [.void_, .int_, .char_, .boolean_]) {
+            if let keyword = Keyword(context, filters: [.void_, .int_, .char_, .boolean_]) {
                 elements.append(keyword)
             } else if let identifier = Identifier(context) {
                 elements.append(identifier)
@@ -94,9 +110,9 @@ struct SubroutineDec: NonTerminalElement {
 
             elements += [
                 Identifier(context)!,
-                Symbol(context, symbols: [.bracketL])!,
+                Symbol(context, filters: [.bracketL])!,
                 try ParameterList(context)!,
-                Symbol(context, symbols: [.bracketR])!,
+                Symbol(context, filters: [.bracketR])!,
                 try SubroutineBody(context)!,
             ]
         } catch {
@@ -108,14 +124,18 @@ struct SubroutineDec: NonTerminalElement {
 
 struct ParameterList: NonTerminalElement {
     var elements: [any Element] = []
+    init() {}
 
     var name: String {
         return "parameterList"
     }
 
-    init?(_ context: Context) throws {
+    mutating func compile(_ context: Context) throws {
+    }
+
+    init(_ context: Context) throws {
         do {
-            if let keyword = Keyword(context, keywords: [.int_, .char_, .boolean_]) {
+            if let keyword = Keyword(context, filters: [.int_, .char_, .boolean_]) {
                 elements.append(keyword)
             } else if let identifier = Identifier(context) {
                 elements.append(identifier)
@@ -125,9 +145,9 @@ struct ParameterList: NonTerminalElement {
 
             elements.append(Identifier(context)!)
 
-            while let symbol = Symbol(context, symbols: [.comma]) {
+            while let symbol = Symbol(context, filters: [.comma]) {
                 elements.append(symbol)
-                if let keyword = Keyword(context, keywords: [.int_, .char_, .boolean_]) {
+                if let keyword = Keyword(context, filters: [.int_, .char_, .boolean_]) {
                     elements.append(keyword)
                 } else if let identifier = Identifier(context) {
                     elements.append(identifier)
@@ -147,59 +167,39 @@ struct ParameterList: NonTerminalElement {
 
 struct SubroutineBody: NonTerminalElement {
     var elements: [any Element] = []
+    init() {}
 
     var name: String {
         return "subroutineBody"
     }
 
-    init?(_ context: Context) throws {
-        do {
-            elements.append(Symbol(context, symbols: [.curlyBracketL])!)
+    mutating func compile(_ context: Context) throws {
+        try must(Symbol(context, filters: [.curlyBracketL]))
 
-            while context.currentToken as? Keyword == .var_{
-                elements.append(try VarDec(context)!)
-            }
-            elements.append(try Statements(context)!)
-            elements.append(Symbol(context, symbols: [.curlyBracketR])!)
-        } catch {
-            print(context.currentLine, name, context.currentToken)
-            throw JackError.compile(context.currentLine, name)
-        }
+        while may(try? VarDec(context)) {}
+
+        try must(try Statements(context))
+        try must(Symbol(context, filters: [.curlyBracketR]))
     }
 }
 
 struct VarDec: NonTerminalElement {
     var elements: [any Element] = []
+    init() {}
 
     var name: String {
         return "varDec"
     }
 
-    init?(_ context: Context) throws {
-        do {
-            elements.append(Keyword(context, keywords: [.var_])!)
+    mutating func compile(_ context: Context) throws {
+        try must(Keyword(context, filters: [.var_]))
+        try must(try Type(context))
+        try must(Identifier(context))
 
-            if let keyword = Keyword(context, keywords: [.int_, .char_, .boolean_]) {
-                elements.append(keyword)
-            } else if let identifier = Identifier(context) {
-                elements.append(identifier)
-            } else {
-                print(context.currentLine, name, context.currentToken)
-                throw JackError.compile(context.currentLine, name)
-            }
-
-            elements.append(Identifier(context)!)
-
-            while let symbol = Symbol(context, symbols: [.comma]) {
-                elements += [
-                    symbol,
-                    Identifier(context)!,
-                ]
-            }
-            elements.append(Symbol(context, symbols: [.semicolon])!)
-        } catch {
-            print(context.currentLine, name, context.currentToken)
-            throw JackError.compile(context.currentLine, name)
+        while may(Symbol(context, filters: [.comma])) {
+            try must(Identifier(context))
         }
+
+        try must(Symbol(context, filters: [.semicolon]))
     }
 }

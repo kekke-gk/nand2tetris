@@ -7,27 +7,7 @@
 
 import Foundation
 
-
-//    init?(str: String) {
-//        let regexIdentifier = /^[a-zA-Z_][\w_]*$/
-//
-//        if let keyword = Keyword(rawValue: str) {
-//            self = .keyword(keyword)
-//        } else if let symbol = Symbol(rawValue: str) {
-//            self = .symbol(symbol)
-//        } else if let uintValue = UInt(str) {
-//            self = .intConst(uintValue)
-//        } else if str.hasPrefix("\"") && str.hasSuffix("\"") {
-//            self = .strConst(String(str.dropFirst().dropLast()))
-//        } else if str.contains(regexIdentifier) {
-//            self = .identifier(str)
-//        } else {
-//            return nil
-//        }
-//    }
-//
-
-func initTerminalElement(_ str: String) -> TerminalElement? {
+func initTerminalElement(_ str: String) -> (any TerminalElement)? {
     if let keyword = Keyword(str) {
         return keyword
     } else if let symbol = Symbol(str) {
@@ -74,27 +54,6 @@ enum Keyword: String, CaseIterable, TerminalElement {
         self.init(rawValue: str)
     }
 
-    init?(_ context: Context) {
-        self.init(context.currentToken.value())
-        _ = context.next()
-    }
-
-    init?(_ context: Context, keywords: [Keyword]) {
-        if keywords.isEmpty {
-            self.init(context)
-            return
-        }
-
-        if let keyword = context.currentToken as? Keyword {
-            if keywords.contains(keyword) {
-                self.init(context)
-                return
-            }
-        }
-
-        return nil
-    }
-
     func value() -> String {
         return self.rawValue
     }
@@ -131,27 +90,6 @@ enum Symbol: String, CaseIterable, TerminalElement {
         self.init(rawValue: str)
     }
 
-    init?(_ context: Context) {
-        self.init(context.currentToken.value())
-        _ = context.next()
-    }
-
-    init?(_ context: Context, symbols: [Symbol]) {
-        if symbols.isEmpty {
-            self.init(context)
-            return
-        }
-
-        if let symbol = context.currentToken as? Symbol {
-            if symbols.contains(symbol) {
-                self.init(context)
-                return
-            }
-        }
-
-        return nil
-    }
-
     func value() -> String {
         return self.rawValue
     }
@@ -174,11 +112,6 @@ struct IntConst: TerminalElement {
         }
     }
 
-    init?(_ context: Context) {
-        self.init(context.currentToken.value())
-        _ = context.next()
-    }
-
     func value() -> String {
         return String(intValue)
     }
@@ -194,15 +127,6 @@ struct StrConst: TerminalElement {
     init?(_ str: String) {
         if str.hasPrefix("\"") && str.hasSuffix("\"") {
             self.strValue = String(str.dropFirst().dropLast())
-        } else {
-            return nil
-        }
-    }
-
-    init?(_ context: Context) {
-        if let element = context.currentToken as? StrConst {
-            self = element
-            _ = context.next()
         } else {
             return nil
         }
@@ -228,11 +152,6 @@ struct Identifier: TerminalElement {
         } else {
             return nil
         }
-    }
-
-    init?(_ context: Context) {
-        self.init(context.currentToken.value())
-        _ = context.next()
     }
 
     func value() -> String {

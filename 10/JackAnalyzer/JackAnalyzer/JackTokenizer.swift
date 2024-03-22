@@ -9,100 +9,86 @@ import Foundation
 
 class JackTokenizer {
     let lines: [String]
-    var tokensList: [[TerminalElement]] = []
+    var tokensList: [[any TerminalElement]] = []
 
-    let delimiters = {() -> [String] in
-        return Symbol.allValues + [" "]
-    }()
+    var inComment = false
+    var inString = false
+    var tokens: [any TerminalElement] = []
+    var curStr: String = ""
 
-    init(fileURL: URL) {
+    init(fileURL: URL) throws {
         do {
             let textRead = try String(contentsOfFile: fileURL.relativePath, encoding: .utf8)
             lines = textRead.components(separatedBy: "\n")
         } catch {
-            print("ファイル読み込み失敗")
-            print(error.localizedDescription)
-            lines = []
+            throw JackError.failedToOpenFile(fileURL)
         }
     }
 
+    private func appendToken() throws {
+        guard curStr.trimmingCharacters(in: .whitespaces) != "" else {
+            return
+        }
+        if let token = initTerminalElement(curStr) {
+            tokens.append(token)
+        } else {
+            throw JackError.tokenize(curStr)
+        }
+        curStr = ""
+    }
+
     func tokenize() throws {
-        var inComment = false
-        var inString = false
+        inComment = false
+        inString = false
+
         for line in lines {
-            var tokens: [TerminalElement] = []
-            var curStr: String = ""
-            let l = Array(line.trimmingCharacters(in: .whitespacesAndNewlines))
+            tokens = []
+            curStr = ""
+
+            let l = Array(line.trimmingCharacters(in: .whitespacesAndNewlines)).map { String($0) }
             for (i, c) in l.enumerated() {
-                if inComment && c == "/" && l[i-1] == "*" {
+                if inComment && l[i-1] == "*" && c == "/" {
                     inComment = false
                     continue
                 }
                 if inComment {
                     continue
                 }
-                if c == "/" && i+1 < l.count && l[i+1] == "*" {
-                    inComment = true
-                    continue
-                }
-                if c == "/" && i+1 < l.count && l[i+1] == "/" {
-                    break
+                if c == "/" && i+1 < l.count {
+                    if l[i+1] == "*" {
+                        inComment = true
+                        continue
+                    }
+                    if l[i+1] == "/" {
+                        break
+                    }
                 }
 
                 if inString {
+                    curStr += c
                     if c == "\"" {
                         inString = false
-                        curStr += String(c)
-                        if let token = initTerminalElement(curStr) {
-                            tokens.append(token)
-                        } else {
-                            throw JackError.tokenize(curStr)
-                        }
-                        curStr = ""
-
-                        continue
-                    } else {
-                        curStr += String(c)
-                        continue
+                        try appendToken()
                     }
+                    continue
                 }
 
-                if curStr != "" && delimiters.contains(String(c)) {
-                    if let token = initTerminalElement(curStr) {
-                        tokens.append(token)
-                    } else {
-                        throw JackError.tokenize(curStr)
-                    }
-                    if Symbol.allValues.contains(String(c)) {
-                        if let token = initTerminalElement(String(c)) {
-                            tokens.append(token)
-                        } else {
-                            throw JackError.tokenize(String(c))
-                        }
-                    }
-                    curStr = ""
-                } else if curStr == "" && c == " " {
-                    continue
-                } else if curStr == "" && c == "\"" {
-                    curStr += String(c)
+                switch c {
+                case " ":
+                    try appendToken()
+                case "\"":
+                    curStr += c
                     inString = true
-                } else if Symbol.allValues.contains(String(c)) {
-                    if let token = initTerminalElement(String(c)) {
-                        tokens.append(token)
-//                        print(token.XMLTag())
-                    } else {
-                        throw JackError.tokenize(String(c))
-                    }
-                }else {
-                    curStr += String(c)
+                case let c where Symbol.allValues.contains(c):
+                    try appendToken()
+                    curStr = c
+                    try appendToken()
+                default:
+                    curStr += c
                 }
             }
             if curStr != "" {
-                if let token = initTerminalElement(curStr) {
-                    tokens.append(token)
-                } else {
-                    throw JackError.tokenize(curStr)
-                }
+                try appendToken()
             }
             self.tokensList.append(tokens)
         }

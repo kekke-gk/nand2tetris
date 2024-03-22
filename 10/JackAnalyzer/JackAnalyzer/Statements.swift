@@ -9,191 +9,127 @@ import Foundation
 
 struct Statements: NonTerminalElement {
     var elements: [any Element] = []
+    init() {}
 
     var name: String {
         return "statements"
     }
 
-    init?(_ context: Context) throws {
-        do {
-        labelWhile: while true {
-            switch context.currentToken as? Keyword {
-            case .let_:
-                elements.append(try LetStatement(context)!)
-            case .if_:
-                elements.append(try IfStatement(context)!)
-            case .while_:
-                elements.append(try WhileStatement(context)!)
-            case .do_:
-                elements.append(try DoStatement(context)!)
-            case .return_:
-                elements.append(try ReturnStatement(context)!)
-            default:
-                break labelWhile
-            }
-        }
-        } catch {
-            print(context.currentLine, name, context.currentToken)
-            throw JackError.compile(context.currentLine, name)
-        }
+    mutating func compile(_ context: Context) throws {
+        while may(try? LetStatement(context))
+                || may(try? IfStatement(context))
+                || may(try? WhileStatement(context))
+                || may(try? DoStatement(context))
+                || may(try? ReturnStatement(context)) {}
     }
 }
 
 struct LetStatement: NonTerminalElement {
     var elements: [any Element] = []
+    init() {}
 
     var name: String {
         return "letStatement"
     }
 
-    init?(_ context: Context) throws {
-        do {
-            elements = [
-                Keyword(context, keywords: [.let_])!,
-                Identifier(context)!,
-            ]
+    mutating func compile(_ context: Context) throws {
+        try must(Keyword(context, filters: [.let_]))
+        try must(Identifier(context))
 
-            if let symbol = Symbol(context, symbols: [.squareBracketL]) {
-                elements += [
-                    symbol,
-                    try Expression(context)!,
-                    Symbol(context, symbols: [.squareBracketR])!,
-                ]
-            }
-
-            elements += [
-                Symbol(context, symbols: [.equal])!,
-                try Expression(context)!,
-                Symbol(context, symbols: [.semicolon])!,
-            ]
-        } catch {
-            print(context.currentLine, name, context.currentToken)
-            throw JackError.compile(context.currentLine, name)
+        if may(Symbol(context, filters: [.squareBracketL])) {
+            try must(try Expression(context))
+            try must(Symbol(context, filters: [.squareBracketR]))
         }
+
+        try must(Symbol(context, filters: [.equal]))
+        try must(try Expression(context))
+        try must(Symbol(context, filters: [.semicolon]))
     }
 }
 
 struct IfStatement: NonTerminalElement {
     var elements: [any Element] = []
+    init() {}
 
     var name: String {
         return "ifStatement"
     }
 
-    init?(_ context: Context) throws {
-        do {
-            elements = [
-                Keyword(context, keywords: [.if_])!,
-                Symbol(context, symbols: [.bracketL])!,
-                try Expression(context)!,
-                Symbol(context, symbols: [.bracketR])!,
-                Symbol(context, symbols: [.curlyBracketL])!,
-                try Statements(context)!,
-                Symbol(context, symbols: [.curlyBracketR])!,
-            ]
+    mutating func compile(_ context: Context) throws {
+        try must(Keyword(context, filters: [.if_]))
+        try must(Symbol(context, filters: [.bracketL]))
+        try must(try Expression(context))
+        try must(Symbol(context, filters: [.bracketR]))
+        try must(Symbol(context, filters: [.curlyBracketL]))
+        try must(try Statements(context))
+        try must(Symbol(context, filters: [.curlyBracketR]))
 
-            if let keyword = Keyword(context, keywords: [.else_]) {
-                elements += [
-                    keyword,
-                    Symbol(context, symbols: [.curlyBracketL])!,
-                    try Statements(context)!,
-                    Symbol(context, symbols: [.curlyBracketR])!,
-                ]
-            }
-        } catch {
-            print(context.currentLine, name, context.currentToken)
-            throw JackError.compile(context.currentLine, name)
+        if may(Keyword(context, filters: [.else_])) {
+            try must(Symbol(context, filters: [.curlyBracketL]))
+            try must(try Statements(context))
+            try must(Symbol(context, filters: [.curlyBracketR]))
         }
     }
 }
 
 struct WhileStatement: NonTerminalElement {
     var elements: [any Element] = []
+    init() {}
 
     var name: String {
         return "whileStatement"
     }
 
-    init?(_ context: Context) throws {
-        do {
-            elements = [
-                Keyword(context, keywords: [.while_])!,
-                Symbol(context, symbols: [.bracketL])!,
-                try Expression(context)!,
-                Symbol(context, symbols: [.bracketR])!,
-                Symbol(context, symbols: [.curlyBracketL])!,
-                try Statements(context)!,
-                Symbol(context, symbols: [.curlyBracketR])!,
-            ]
-        } catch {
-            print(context.currentLine, name, context.currentToken)
-            throw JackError.compile(context.currentLine, name)
-        }
+    mutating func compile(_ context: Context) throws {
+        try must(Keyword(context, filters: [.while_]))
+        try must(Symbol(context, filters: [.bracketL]))
+        try must(try Expression(context))
+        try must(Symbol(context, filters: [.bracketR]))
+        try must(Symbol(context, filters: [.curlyBracketL]))
+        try must(try Statements(context))
+        try must(Symbol(context, filters: [.curlyBracketR]))
     }
 }
 
 struct DoStatement: NonTerminalElement {
     var elements: [any Element] = []
+    init() {}
 
     var name: String {
         return "doStatement"
     }
 
-    init?(_ context: Context) throws {
-        do {
-            elements.append(Keyword(context, keywords: [.do_])!)
+    mutating func compile(_ context: Context) throws {
+        try must(Keyword(context, filters: [.do_]))
+        try must(Identifier(context))
 
-            elements.append(Identifier(context)!)
-
-            if let symbol = Symbol(context, symbols: [.bracketL]) {
-                elements += [
-                    symbol,
-                    try ExpressionList(context)!,
-                    Symbol(context, symbols: [.bracketR])!,
-                ]
-            } else if let symbol = Symbol(context, symbols: [.period]) {
-                elements += [
-                    symbol,
-                    Identifier(context)!,
-                    Symbol(context, symbols: [.bracketL])!,
-                ]
-
-                elements += [
-                    try ExpressionList(context)!,
-                    Symbol(context, symbols: [.bracketR])!,
-                ]
-            } else {
-                throw JackError.compile(context.currentLine, name)
-            }
-
-            elements.append(Symbol(context, symbols: [.semicolon])!)
-        } catch {
-            print(context.currentLine, name, context.currentToken)
-            throw JackError.compile(context.currentLine, name)
+        if may(Symbol(context, filters: [.bracketL])) {
+            try must(try ExpressionList(context))
+            try must(Symbol(context, filters: [.bracketR]))
+        } else {
+            try must(Symbol(context, filters: [.period]))
+            try must(Identifier(context))
+            try must(Symbol(context, filters: [.bracketL]))
+            try must(try ExpressionList(context))
+            try must(Symbol(context, filters: [.bracketR]))
         }
+
+        try must(Symbol(context, filters: [.semicolon]))
     }
 }
 
 struct ReturnStatement: NonTerminalElement {
     var elements: [any Element] = []
+    init() {}
 
     var name: String {
         return "returnStatement"
     }
 
-    init?(_ context: Context) throws {
-        do {
-            elements.append(Keyword(context, keywords: [.return_])!)
-
-            if let symbol = Symbol(context, symbols: [.semicolon]) {
-                elements.append(symbol)
-            } else {
-                elements.append(try Expression(context)!)
-                elements.append(Symbol(context, symbols: [.semicolon])!)
-            }
-        } catch {
-            print(context.currentLine, name, context.currentToken)
-            throw JackError.compile(context.currentLine, name)
-        }
+    mutating func compile(_ context: Context) throws {
+        try must<Keyword>(context)
+        try must(Keyword(context, filters: [.return_]))
+        may(try? Expression(context))
+        try must(Symbol(context, filters: [.semicolon]))
     }
 }

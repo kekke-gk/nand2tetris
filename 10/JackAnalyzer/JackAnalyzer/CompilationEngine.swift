@@ -11,7 +11,7 @@ class CompilationEngine {
     let context: Context
     var element: Element?
 
-    init(tokensList: [[TerminalElement]]) {
+    init(tokensList: [[any TerminalElement]]) {
         self.context = Context(tokensList: tokensList)
     }
 
@@ -29,16 +29,16 @@ class CompilationEngine {
 }
 
 class Context: CustomStringConvertible {
-    let tokensList: [[TerminalElement]]
+    let tokensList: [[any TerminalElement]]
     var currentLine: Int = 0
     var currentIndex: Int = 0
-    var currentToken: TerminalElement
+    var currentToken: any TerminalElement
 
     var description: String {
         return "(\(currentLine), \(currentIndex)), \(currentToken)"
     }
 
-    init(tokensList: [[TerminalElement]]) {
+    required init(tokensList: [[any TerminalElement]]) {
         self.tokensList = tokensList
 
         while tokensList[currentLine].count == 0 {
@@ -47,22 +47,22 @@ class Context: CustomStringConvertible {
         currentToken = tokensList[currentLine][currentIndex]
     }
 
-    func next() -> TerminalElement? {
+    func next() -> (any TerminalElement)? {
         let (line, index, token) = next_()
         currentLine = line
         currentIndex = index
-        if let token: TerminalElement = token {
+        if let token: any TerminalElement = token {
             currentToken = token
         }
         return token
     }
 
-    func checkNext() -> TerminalElement? {
+    func checkNext() -> (any TerminalElement)? {
         let (_, _, token) = next_()
         return token
     }
 
-    private func next_() -> (Int, Int, TerminalElement?) {
+    private func next_() -> (Int, Int, (any TerminalElement)?) {
         var line = currentLine
         var index = currentIndex
 
@@ -80,9 +80,18 @@ class Context: CustomStringConvertible {
         }
         return (line, index, tokensList[line][index])
     }
+
+    func copy() -> Self {
+        let instance = Self.init(tokensList: self.tokensList)
+        instance.currentLine = currentLine
+        instance.currentIndex = currentIndex
+        instance.currentToken = currentToken
+        return instance
+    }
+
+    func update(_ context: Context) {
+        currentLine = context.currentLine
+        currentIndex = context.currentIndex
+        currentToken = context.currentToken
+    }
 }
-
-
-
-
-

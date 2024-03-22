@@ -14,12 +14,12 @@ struct Expression: NonTerminalElement {
         return "expression"
     }
 
-    init?(_ context: Context) throws {
+    init(_ context: Context) throws {
         do {
             if let term = try Term(context) {
                 elements.append(term)
 
-                while let symbol = Symbol(context, symbols: [.plus, .minus, .asterisk, .slash, .and, .or, .angleBracketL, .angleBracketR, .equal]) {
+                while let symbol = Symbol(context, filters: [.plus, .minus, .asterisk, .slash, .and, .or, .angleBracketL, .angleBracketR, .equal]) {
                     elements += [
                         symbol,
                         try Term(context)!,
@@ -43,12 +43,12 @@ struct ExpressionList: NonTerminalElement {
         return "expressionList"
     }
 
-    init?(_ context: Context) throws {
+    init(_ context: Context) throws {
         do {
             if let expression = try Expression(context) {
                 elements.append(expression)
 
-                while let symbol = Symbol(context, symbols: [.comma]) {
+                while let symbol = Symbol(context, filters: [.comma]) {
                     elements += [
                         symbol,
                         try Expression(context)!,
@@ -71,7 +71,7 @@ struct Term: NonTerminalElement {
         return "term"
     }
 
-    init?(_ context: Context) throws {
+    init(_ context: Context) throws {
         do {
             if let element = IntConst(context) {
                 elements = [element]
@@ -83,34 +83,34 @@ struct Term: NonTerminalElement {
                 return
             }
 
-            if let element = Keyword(context, keywords: [.true_, .false_, .null_, .this_]) {
+            if let element = Keyword(context, filters: [.true_, .false_, .null_, .this_]) {
                 elements = [element]
                 return
             }
 
             if let identifier = Identifier(context) {
                 elements.append(identifier)
-                if let symbol = Symbol(context, symbols: [.squareBracketL]) {
+                if let symbol = Symbol(context, filters: [.squareBracketL]) {
                     elements += [
                         symbol,
                         try Expression(context)!,
-                        Symbol(context, symbols: [.squareBracketR])!,
+                        Symbol(context, filters: [.squareBracketR])!,
                     ]
                     return
-                } else if let symbol = Symbol(context, symbols: [.bracketL]) {
+                } else if let symbol = Symbol(context, filters: [.bracketL]) {
                     elements += [
                         symbol,
                         try ExpressionList(context)!,
-                        Symbol(context, symbols: [.bracketR])!,
+                        Symbol(context, filters: [.bracketR])!,
                     ]
                     return
-                } else if let symbol = Symbol(context, symbols: [.period]) {
+                } else if let symbol = Symbol(context, filters: [.period]) {
                     elements += [
                         symbol,
                         Identifier(context)!,
-                        Symbol(context, symbols: [.bracketL])!,
+                        Symbol(context, filters: [.bracketL])!,
                         try ExpressionList(context)!,
-                        Symbol(context, symbols: [.bracketR])!,
+                        Symbol(context, filters: [.bracketR])!,
                     ]
                     return
                 } else {
@@ -118,16 +118,16 @@ struct Term: NonTerminalElement {
                 }
             }
 
-            if let symbol = Symbol(context, symbols: [.bracketL]) {
+            if let symbol = Symbol(context, filters: [.bracketL]) {
                 elements = [
                     symbol,
                     try Expression(context)!,
-                    Symbol(context, symbols: [.bracketR])!,
+                    Symbol(context, filters: [.bracketR])!,
                 ]
                 return
             }
 
-            if let symbol = Symbol(context, symbols: [.minus, .tilde]) {
+            if let symbol = Symbol(context, filters: [.minus, .tilde]) {
                 elements = [
                     symbol,
                     try Term(context)!,
