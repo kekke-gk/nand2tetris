@@ -1,0 +1,14 @@
+../../tools/TextComparer.sh ArrayTest/Main{.xml,_.xml}
+../../tools/TextComparer.sh ArrayTest/MainT{.xml,_.xml}
+../../tools/TextComparer.sh Square/Main{.xml,_.xml}
+../../tools/TextComparer.sh Square/MainT{.xml,_.xml}
+../../tools/TextComparer.sh Square/Square{.xml,_.xml}
+../../tools/TextComparer.sh Square/SquareT{.xml,_.xml}
+../../tools/TextComparer.sh Square/SquareGame{.xml,_.xml}
+../../tools/TextComparer.sh Square/SquareGameT{.xml,_.xml}
+../../tools/TextComparer.sh ExpressionLessSquare/Main{.xml,_.xml}
+../../tools/TextComparer.sh ExpressionLessSquare/MainT{.xml,_.xml}
+../../tools/TextComparer.sh ExpressionLessSquare/Square{.xml,_.xml}
+../../tools/TextComparer.sh ExpressionLessSquare/SquareT{.xml,_.xml}
+../../tools/TextComparer.sh ExpressionLessSquare/SquareGame{.xml,_.xml}
+../../tools/TextComparer.sh ExpressionLessSquare/SquareGameT{.xml,_.xml}
