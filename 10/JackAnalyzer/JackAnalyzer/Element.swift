@@ -101,7 +101,7 @@ extension NonTerminalElement {
     mutating func must<T: Element>(_ context: Context, _ type: T.Type) throws {
         guard let element = try T(context) else {
             let message = "At \(context.currentLine), '\(type)' expected but '\(context.currentToken.name) (\(context.currentToken.value())' found"
-            throw JackError.compile(context.currentLine, message)
+            throw JackError.failedToCompile(context.currentLine, message)
         }
         elements.append(element)
     }
@@ -120,7 +120,7 @@ extension NonTerminalElement {
         guard let element = T(context), filters.contains(element) else {
             let filtersStr = filters.map { $0.value() }.joined(separator: ", ")
             let message = "At \(context.currentLine), '\(T.self) ( \(filtersStr) )' expected but '\(context.currentToken.name) ( \(context.currentToken.value()) )' found"
-            throw JackError.compile(context.currentLine, message)
+            throw JackError.failedToCompile(context.currentLine, message)
         }
         elements.append(element)
     }
@@ -140,11 +140,11 @@ extension NonTerminalElement {
         let initialContext = context.copy()
         do {
             try compile(context)
-        } catch JackError.compile(let lineNum, let message) {
+        } catch JackError.failedToCompile(let lineNum, let message) {
             var newMessage = "\(message)\n"
             newMessage += "while compile \(name)"
             context.update(initialContext)
-            throw JackError.compile(lineNum, newMessage)
+            throw JackError.failedToCompile(lineNum, newMessage)
         }
     }
 }

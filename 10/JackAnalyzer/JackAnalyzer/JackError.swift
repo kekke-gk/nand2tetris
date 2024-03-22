@@ -9,6 +9,6 @@ import Foundation
 
 enum JackError: Error {
     case failedToOpenFile(URL)
-    case tokenize(String)
-    case compile(Int, String)
+    case failedToTokenize(Int, String)
+    case failedToCompile(Int, String)
 }

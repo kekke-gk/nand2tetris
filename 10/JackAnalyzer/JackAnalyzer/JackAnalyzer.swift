@@ -56,10 +56,10 @@ struct JackAnalyzer: ParsableCommand {
         } catch JackError.failedToOpenFile(let fileURL) {
             print("[Error] Failed to open file")
             print(fileURL.relativePath)
-        } catch JackError.tokenize(let str) {
+        } catch JackError.failedToTokenize(let lineNum, let message) {
             print("Tokenize error")
-            print(str)
-        } catch JackError.compile(let lineNum, let str) {
+            print("At \(lineNum):", message)
+        } catch JackError.failedToCompile(let lineNum, let message) {
             print("Compile error")
             if lineNum - 1 >= 0 {
                 print("\(lineNum-1):", jackTokenizer!.lines[lineNum-1])
@@ -68,7 +68,7 @@ struct JackAnalyzer: ParsableCommand {
             if lineNum + 1 < jackTokenizer!.lines.count {
                 print("\(lineNum+1):", jackTokenizer!.lines[lineNum+1])
             }
-            print(str)
+            print(message)
         }
     }
 }

@@ -15,6 +15,7 @@ class JackTokenizer {
     var inString = false
     var tokens: [any TerminalElement] = []
     var curStr: String = ""
+    var curLineNum: Int = 0
     
     init(fileURL: URL) throws {
         do {
@@ -32,7 +33,7 @@ class JackTokenizer {
         if let token = initTerminalElement(curStr) {
             tokens.append(token)
         } else {
-            throw JackError.tokenize(curStr)
+            throw JackError.failedToTokenize(curLineNum, curStr)
         }
         curStr = ""
     }
@@ -41,9 +42,10 @@ class JackTokenizer {
         inComment = false
         inString = false
         
-        for line in lines {
+        for (lineNum, line) in lines.enumerated() {
             tokens = []
             curStr = ""
+            curLineNum = lineNum
             
             let l = Array(line.trimmingCharacters(in: .whitespacesAndNewlines)).map { String($0) }
             for (i, c) in l.enumerated() {
