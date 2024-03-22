@@ -15,7 +15,6 @@ struct JackAnalyzer: ParsableCommand {
     
     mutating func run() throws {
         let fileOrDirURL = URL(filePath: filePath)
-        print(fileOrDirURL.path())
         
         do {
             if fileOrDirURL.pathExtension == "jack" {
