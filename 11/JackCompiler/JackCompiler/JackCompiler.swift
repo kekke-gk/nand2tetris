@@ -1,15 +1,15 @@
 //
-//  JackAnalyzer.swift
-//  JackAnalyzer
+//  JackCompiler.swift
+//  JackCompiler
 //
-//  Created by Keisuke Gomi on 2024/03/04.
+//  Created by Keisuke Gomi on 2024/03/23.
 //
 
 import Foundation
 import ArgumentParser
 
 @main
-struct JackAnalyzer: ParsableCommand {
+struct JackCompiler: ParsableCommand {
     @Argument(help: "The .jack file or the directory contains .jack files path to compile.")
     var filePath: String
 

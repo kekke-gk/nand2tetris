@@ -13,10 +13,12 @@
 		E77EA5372BAEAFE800B91E98 /* JackError.swift in Sources */ = {isa = PBXBuildFile; fileRef = E77EA52E2BAEAFE800B91E98 /* JackError.swift */; };
 		E77EA5382BAEAFE800B91E98 /* ProgramStructure.swift in Sources */ = {isa = PBXBuildFile; fileRef = E77EA52F2BAEAFE800B91E98 /* ProgramStructure.swift */; };
 		E77EA5392BAEAFE800B91E98 /* Statements.swift in Sources */ = {isa = PBXBuildFile; fileRef = E77EA5302BAEAFE800B91E98 /* Statements.swift */; };
-		E77EA53A2BAEAFE800B91E98 /* JackAnalyzer.swift in Sources */ = {isa = PBXBuildFile; fileRef = E77EA5312BAEAFE800B91E98 /* JackAnalyzer.swift */; };
 		E77EA53B2BAEAFE800B91E98 /* Element.swift in Sources */ = {isa = PBXBuildFile; fileRef = E77EA5322BAEAFE800B91E98 /* Element.swift */; };
 		E77EA53C2BAEAFE800B91E98 /* Token.swift in Sources */ = {isa = PBXBuildFile; fileRef = E77EA5332BAEAFE800B91E98 /* Token.swift */; };
 		E77EA53D2BAEAFE800B91E98 /* Expressions.swift in Sources */ = {isa = PBXBuildFile; fileRef = E77EA5342BAEAFE800B91E98 /* Expressions.swift */; };
+		E77EA5412BAECA5100B91E98 /* JackCompiler.swift in Sources */ = {isa = PBXBuildFile; fileRef = E77EA5402BAECA5100B91E98 /* JackCompiler.swift */; };
+		E77EA5432BAECB1300B91E98 /* SymbolTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = E77EA5422BAECB1300B91E98 /* SymbolTable.swift */; };
+		E77EA5452BAECBC200B91E98 /* VMWriter.swift in Sources */ = {isa = PBXBuildFile; fileRef = E77EA5442BAECBC200B91E98 /* VMWriter.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -38,10 +40,12 @@
 		E77EA52E2BAEAFE800B91E98 /* JackError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JackError.swift; sourceTree = "<group>"; };
 		E77EA52F2BAEAFE800B91E98 /* ProgramStructure.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProgramStructure.swift; sourceTree = "<group>"; };
 		E77EA5302BAEAFE800B91E98 /* Statements.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Statements.swift; sourceTree = "<group>"; };
-		E77EA5312BAEAFE800B91E98 /* JackAnalyzer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JackAnalyzer.swift; sourceTree = "<group>"; };
 		E77EA5322BAEAFE800B91E98 /* Element.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Element.swift; sourceTree = "<group>"; };
 		E77EA5332BAEAFE800B91E98 /* Token.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Token.swift; sourceTree = "<group>"; };
 		E77EA5342BAEAFE800B91E98 /* Expressions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Expressions.swift; sourceTree = "<group>"; };
+		E77EA5402BAECA5100B91E98 /* JackCompiler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JackCompiler.swift; sourceTree = "<group>"; };
+		E77EA5422BAECB1300B91E98 /* SymbolTable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SymbolTable.swift; sourceTree = "<group>"; };
+		E77EA5442BAECBC200B91E98 /* VMWriter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMWriter.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -77,9 +81,11 @@
 			children = (
 				E77EA53F2BAEB15D00B91E98 /* Grammar */,
 				E77EA52C2BAEAFE800B91E98 /* CompilationEngine.swift */,
-				E77EA5312BAEAFE800B91E98 /* JackAnalyzer.swift */,
 				E77EA52E2BAEAFE800B91E98 /* JackError.swift */,
 				E77EA52D2BAEAFE800B91E98 /* JackTokenizer.swift */,
+				E77EA5402BAECA5100B91E98 /* JackCompiler.swift */,
+				E77EA5422BAECB1300B91E98 /* SymbolTable.swift */,
+				E77EA5442BAECBC200B91E98 /* VMWriter.swift */,
 			);
 			path = JackCompiler;
 			sourceTree = "<group>";
@@ -183,11 +189,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				E77EA5362BAEAFE800B91E98 /* JackTokenizer.swift in Sources */,
+				E77EA5412BAECA5100B91E98 /* JackCompiler.swift in Sources */,
+				E77EA5432BAECB1300B91E98 /* SymbolTable.swift in Sources */,
 				E77EA5372BAEAFE800B91E98 /* JackError.swift in Sources */,
-				E77EA53A2BAEAFE800B91E98 /* JackAnalyzer.swift in Sources */,
 				E77EA5392BAEAFE800B91E98 /* Statements.swift in Sources */,
 				E77EA5382BAEAFE800B91E98 /* ProgramStructure.swift in Sources */,
 				E77EA53D2BAEAFE800B91E98 /* Expressions.swift in Sources */,
+				E77EA5452BAECBC200B91E98 /* VMWriter.swift in Sources */,
 				E77EA53B2BAEAFE800B91E98 /* Element.swift in Sources */,
 				E77EA5352BAEAFE800B91E98 /* CompilationEngine.swift in Sources */,
 				E77EA53C2BAEAFE800B91E98 /* Token.swift in Sources */,
