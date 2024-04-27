@@ -26,6 +26,11 @@ class Context: CustomStringConvertible {
     var currentIndex: Int = 0
     var currentToken: any TerminalElement
 
+    var varSymbolTable: VarSymbolTable
+    var funcSymbolTable: FuncSymbolTable
+
+    var elementsStack: [any Element] = []
+
     var description: String {
         return "(\(currentLine), \(currentIndex)), \(currentToken)"
     }
@@ -37,6 +42,9 @@ class Context: CustomStringConvertible {
             currentLine += 1
         }
         currentToken = tokensList[currentLine][currentIndex]
+
+        varSymbolTable = VarSymbolTable()
+        funcSymbolTable = FuncSymbolTable()
     }
 
     func next() -> (any TerminalElement)? {
@@ -75,9 +83,7 @@ class Context: CustomStringConvertible {
 
     func copy() -> Self {
         let instance = Self.init(tokensList: self.tokensList)
-        instance.currentLine = currentLine
-        instance.currentIndex = currentIndex
-        instance.currentToken = currentToken
+        instance.update(self)
         return instance
     }
 
@@ -85,5 +91,51 @@ class Context: CustomStringConvertible {
         currentLine = context.currentLine
         currentIndex = context.currentIndex
         currentToken = context.currentToken
+
+        varSymbolTable = context.varSymbolTable
+        funcSymbolTable = context.funcSymbolTable
+    }
+
+    func getCurrentScope() -> Scope {
+        var fun: SubroutineDec? = nil
+        for element in elementsStack.reversed() {
+            if let f = element as? SubroutineDec {
+                fun = f
+            }
+
+            if let cls = element as? Class {
+                let className = cls.className!
+                if let f = fun {
+                    return .subroutine(className, f.funcName!)
+                } else {
+                    return .class_(className)
+                }
+            }
+        }
+        return .global
+    }
+
+    enum StatementKind: Hashable {
+        case if_
+        case while_
+    }
+
+    struct ScopeAndKind: Hashable {
+        let scope: Scope
+        let kind: StatementKind
+    }
+
+    var uniqueNumbers: [ScopeAndKind: Int] = [:]
+
+    func getUniqueNumber(scope: Scope, kind: StatementKind) -> Int {
+        let sk = ScopeAndKind(scope: scope, kind: kind)
+
+        if !uniqueNumbers.keys.contains(sk) {
+            uniqueNumbers[sk] = 0
+        }
+
+        let num: Int = uniqueNumbers[sk]!
+        uniqueNumbers[sk] = num + 1
+        return num
     }
 }

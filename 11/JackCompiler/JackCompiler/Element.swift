@@ -70,15 +70,16 @@ extension TerminalElement {
     }
 }
 
-protocol NonTerminalElement: Element {
+protocol NonTerminalElement: Element, AnyObject {
     init()
     init(_ context: Context) throws
-    mutating func compile(_ context: Context) throws
-    mutating func must<T: Element>(_ context: Context, _ type: T.Type) throws
-    mutating func may<T: Element>(_ context: Context, _ type: T.Type) -> Bool
-    mutating func must<T: TerminalElement>(_ context: Context, _ filters: [T]) throws
-    mutating func may<T: TerminalElement>(_ context: Context, _ filters: [T]) -> Bool
+    func compile(_ context: Context) throws
+    func must<T: Element>(_ context: Context, _ type: T.Type) throws -> T
+    func may<T: Element>(_ context: Context, _ type: T.Type) -> T?
+    func must<T: TerminalElement>(_ context: Context, _ filters: [T]) throws -> T
+    func may<T: TerminalElement>(_ context: Context, _ filters: [T]) -> T?
     var elements: [Element] { get set }
+    func vmcode(_ varSymbolTable: VarSymbolTable, _ funcSymbolTable: FuncSymbolTable) throws -> String 
 }
 
 extension NonTerminalElement {
@@ -98,54 +99,68 @@ extension NonTerminalElement {
         return desc
     }
 
-    mutating func must<T: Element>(_ context: Context, _ type: T.Type) throws {
+    func must<T: Element>(_ context: Context, _ type: T.Type) throws -> T {
         guard let element = try T(context) else {
             let message = "At \(context.currentLine), '\(type)' expected but '\(context.currentToken.name) (\(context.currentToken.value())' found"
             throw JackError.failedToCompile(context.currentLine, message)
         }
         elements.append(element)
+        return element
     }
 
-    mutating func may<T: Element>(_ context: Context, _ type: T.Type) -> Bool {
+    func may<T: Element>(_ context: Context, _ type: T.Type) -> T? {
         let initialContext = context.copy()
         guard let element = try? T(context) else {
             context.update(initialContext)
-            return false
+            return nil
         }
         elements.append(element)
-        return true
+        return element
     }
 
-    mutating func must<T: TerminalElement>(_ context: Context, _ filters: [T]) throws {
+    func must<T: TerminalElement>(_ context: Context, _ filters: [T]) throws -> T {
         guard let element = T(context), filters.contains(element) else {
             let filtersStr = filters.map { $0.value() }.joined(separator: ", ")
             let message = "At \(context.currentLine), '\(T.self) ( \(filtersStr) )' expected but '\(context.currentToken.name) ( \(context.currentToken.value()) )' found"
             throw JackError.failedToCompile(context.currentLine, message)
         }
         elements.append(element)
+        return element
     }
 
-    mutating func may<T: TerminalElement>(_ context: Context, _ filters: [T]) -> Bool {
+    func may<T: TerminalElement>(_ context: Context, _ filters: [T]) -> T? {
         let initialContext = context.copy()
         guard let element = T(context), filters.contains(element) else {
             context.update(initialContext)
-            return false
+            return nil
         }
         elements.append(element)
-        return true
+        return element
     }
 
     init(_ context: Context) throws {
-        self = Self.init()
+//        self = Self.init()
+        self.init()
         let initialContext = context.copy()
+        let s = String(repeating: "  ", count: context.elementsStack.count)
         do {
+            context.elementsStack.append(self)
+//            print("\(s)start", self.name)
             try compile(context)
+            context.elementsStack.popLast()
+//            print("\(s)end", self.name)
         } catch JackError.failedToCompile(let lineNum, let message) {
+            context.elementsStack.popLast()
+//            print("\(s)end", self.name)
             var newMessage = "\(message)\n"
             newMessage += "while compile \(name)"
             context.update(initialContext)
             throw JackError.failedToCompile(lineNum, newMessage)
         }
+    }
+
+    func vmcode(_ varSymbolTable: VarSymbolTable, _ funcSymbolTable: FuncSymbolTable) throws -> String {
+        throw JackError.failedToCompile(0, "\(self.name) element has no vmcode.")
     }
 }
 

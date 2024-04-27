@@ -7,128 +7,236 @@
 
 import Foundation
 
-struct Statements: NonTerminalElement {
+class Statements: NonTerminalElement {
     var elements: [any Element] = []
-    init() {}
+    required init() {}
 
     var name: String {
         return "statements"
     }
 
-    mutating func compile(_ context: Context) throws {
-        while may(context, LetStatement.self)
-                || may(context, IfStatement.self)
-                || may(context, WhileStatement.self)
-                || may(context, DoStatement.self)
-                || may(context, ReturnStatement.self) {}
+    func compile(_ context: Context) throws {
+        while (may(context, LetStatement.self) != nil)
+                || (may(context, IfStatement.self) != nil)
+                || (may(context, WhileStatement.self) != nil)
+                || (may(context, DoStatement.self) != nil)
+                || (may(context, ReturnStatement.self) != nil) {}
+    }
+
+    func vmcode(_ varSymbolTable: VarSymbolTable, _ funcSymbolTable: FuncSymbolTable) throws -> String {
+        var code = ""
+        for element in elements {
+            let nonTerm = element as! NonTerminalElement
+            code += try nonTerm.vmcode(varSymbolTable, funcSymbolTable)
+        }
+        return code
     }
 }
 
-struct LetStatement: NonTerminalElement {
+class LetStatement: NonTerminalElement {
     var elements: [any Element] = []
-    init() {}
+    required init() {}
 
     var name: String {
         return "letStatement"
     }
 
-    mutating func compile(_ context: Context) throws {
-        try must(context, [Keyword.let_])
-        try must(context, Identifier.self)
+    var varName: String?
+    var expression: Expression?
+    var scope: Scope?
 
-        if may(context, [Symbol.squareBracketL]) {
+    func compile(_ context: Context) throws {
+        try must(context, [Keyword.let_])
+        let identifier = try must(context, Identifier.self)
+        varName = identifier.value()
+
+        if let _ = may(context, [Symbol.squareBracketL]) {
             try must(context, Expression.self)
             try must(context, [Symbol.squareBracketR])
         }
 
         try must(context, [Symbol.equal])
-        try must(context, Expression.self)
+        expression = try must(context, Expression.self)
         try must(context, [Symbol.semicolon])
+
+        scope = context.getCurrentScope()
+    }
+
+    func vmcode(_ varSymbolTable: VarSymbolTable, _ funcSymbolTable: FuncSymbolTable) throws -> String {
+        guard let varSymbol = varSymbolTable[varName!, scope!] else {
+            throw JackError.failedToCompile(0, "\(varName!) is not defined in \(scope!).")
+        }
+        var code = try expression!.vmcode(varSymbolTable, funcSymbolTable)
+        code += "pop \(varSymbol.kind.rawValue) \(varSymbol.index)\n"
+        return code
     }
 }
 
-struct IfStatement: NonTerminalElement {
+class IfStatement: NonTerminalElement {
     var elements: [any Element] = []
-    init() {}
+    required init() {}
 
     var name: String {
         return "ifStatement"
     }
 
-    mutating func compile(_ context: Context) throws {
+    var expression: Expression?
+    var statements: Statements?
+    var statementsElse: Statements?
+
+    var labelUniqueNum: Int?
+
+    func compile(_ context: Context) throws {
         try must(context, [Keyword.if_])
         try must(context, [Symbol.bracketL])
-        try must(context, Expression.self)
+        expression = try must(context, Expression.self)
         try must(context, [Symbol.bracketR])
         try must(context, [Symbol.curlyBracketL])
-        try must(context, Statements.self)
+        labelUniqueNum = context.getUniqueNumber(scope: context.getCurrentScope(), kind: .if_)
+        statements = try must(context, Statements.self)
         try must(context, [Symbol.curlyBracketR])
 
-        if may(context, [Keyword.else_]) {
+        if let _ = may(context, [Keyword.else_]) {
             try must(context, [Symbol.curlyBracketL])
-            try must(context, Statements.self)
+            statementsElse = try must(context, Statements.self)
             try must(context, [Symbol.curlyBracketR])
         }
     }
+
+    func vmcode(_ varSymbolTable: VarSymbolTable, _ funcSymbolTable: FuncSymbolTable) throws -> String {
+        let labelTrue = "IF_TRUE\(labelUniqueNum!)"
+        let labelFalse = "IF_FALSE\(labelUniqueNum!)"
+        let labelEnd = "IF_END\(labelUniqueNum!)"
+
+        var code = try expression!.vmcode(varSymbolTable, funcSymbolTable)
+        code += "if-goto \(labelTrue)\n"
+        code += "goto \(labelFalse)\n"
+        code += "label \(labelTrue)\n"
+        code += try statements!.vmcode(varSymbolTable, funcSymbolTable)
+        code += "goto \(labelEnd)\n"
+        code += "label \(labelFalse)\n"
+        code += try statementsElse!.vmcode(varSymbolTable, funcSymbolTable)
+        code += "label \(labelEnd)\n"
+
+//        var code = try expression!.vmcode(varSymbolTable, funcSymbolTable)
+//        code += "not\n"
+//        code += "if-goto \(labelTrue)\n"
+//        code += try statements!.vmcode(varSymbolTable, funcSymbolTable)
+//        code += "goto \(labelFalse)\n"
+//        code += "label \(labelTrue)\n"
+//        code += try statementsElse!.vmcode(varSymbolTable, funcSymbolTable)
+//        code += "label \(labelFalse)\n"
+        return code
+    }
 }
 
-struct WhileStatement: NonTerminalElement {
+class WhileStatement: NonTerminalElement {
     var elements: [any Element] = []
-    init() {}
+    required init() {}
 
     var name: String {
         return "whileStatement"
     }
 
-    mutating func compile(_ context: Context) throws {
+    var expression: Expression?
+    var statements: Statements?
+
+    var labelUniqueNum: Int?
+
+    func compile(_ context: Context) throws {
         try must(context, [Keyword.while_])
         try must(context, [Symbol.bracketL])
-        try must(context, Expression.self)
+        expression = try must(context, Expression.self)
         try must(context, [Symbol.bracketR])
         try must(context, [Symbol.curlyBracketL])
-        try must(context, Statements.self)
+        statements = try must(context, Statements.self)
         try must(context, [Symbol.curlyBracketR])
+
+        labelUniqueNum = context.getUniqueNumber(scope: context.getCurrentScope(), kind: .while_)
+    }
+
+    func vmcode(_ varSymbolTable: VarSymbolTable, _ funcSymbolTable: FuncSymbolTable) throws -> String {
+        let startLabel = "WHILE_EXP\(labelUniqueNum!)"
+        let endLabel = "WHILE_END\(labelUniqueNum!)"
+
+        var code = "label \(startLabel)\n"
+        code += try expression!.vmcode(varSymbolTable, funcSymbolTable)
+        code += "not\n"
+        code += "if-goto \(endLabel)\n"
+        code += try statements!.vmcode(varSymbolTable, funcSymbolTable)
+        code += "goto \(startLabel)\n"
+        code += "label \(endLabel)\n"
+        return code
     }
 }
 
-struct DoStatement: NonTerminalElement {
+class DoStatement: NonTerminalElement {
     var elements: [any Element] = []
-    init() {}
+    required init() {}
 
     var name: String {
         return "doStatement"
     }
 
-    mutating func compile(_ context: Context) throws {
-        try must(context, [Keyword.do_])
-        try must(context, Identifier.self)
+    var funcName: String?
+    var argNum: Int?
+    var expressionList: ExpressionList?
 
-        if may(context, [Symbol.bracketL]) {
-            try must(context, ExpressionList.self)
+    func compile(_ context: Context) throws {
+        try must(context, [Keyword.do_])
+        let identifier = try must(context, Identifier.self)
+
+        if let _ = may(context, [Symbol.bracketL]) {
+            funcName = identifier.value()
+            expressionList = try must(context, ExpressionList.self)
+            argNum = expressionList!.expressions.count
             try must(context, [Symbol.bracketR])
         } else {
             try must(context, [Symbol.period])
-            try must(context, Identifier.self)
+            let identifier2 = try must(context, Identifier.self)
+            funcName = "\(identifier.value()).\(identifier2.value())"
             try must(context, [Symbol.bracketL])
-            try must(context, ExpressionList.self)
+            expressionList = try must(context, ExpressionList.self)
+            argNum = expressionList!.expressions.count
             try must(context, [Symbol.bracketR])
         }
 
         try must(context, [Symbol.semicolon])
     }
+
+    func vmcode(_ varSymbolTable: VarSymbolTable, _ funcSymbolTable: FuncSymbolTable) throws -> String {
+        var code = try expressionList!.vmcode(varSymbolTable, funcSymbolTable)
+        code += "call \(funcName!) \(argNum!)\n"
+        code += "pop temp 0\n"
+        return code
+    }
 }
 
-struct ReturnStatement: NonTerminalElement {
+class ReturnStatement: NonTerminalElement {
     var elements: [any Element] = []
-    init() {}
+    required init() {}
 
     var name: String {
         return "returnStatement"
     }
 
-    mutating func compile(_ context: Context) throws {
+    var expression: Expression?
+
+    func compile(_ context: Context) throws {
         try must(context, [Keyword.return_])
-        _ = may(context, Expression.self)
+        expression = may(context, Expression.self)
         try must(context, [Symbol.semicolon])
+    }
+
+    func vmcode(_ varSymbolTable: VarSymbolTable, _ funcSymbolTable: FuncSymbolTable) throws -> String {
+        if let expression = expression {
+            var code = try expression.vmcode(varSymbolTable, funcSymbolTable)
+            code += "return\n"
+            return code
+        }
+        return """
+        push constant 0
+        return\n
+        """
     }
 }

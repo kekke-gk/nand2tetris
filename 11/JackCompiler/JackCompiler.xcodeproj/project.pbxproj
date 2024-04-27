@@ -18,7 +18,6 @@
 		E77EA53D2BAEAFE800B91E98 /* Expressions.swift in Sources */ = {isa = PBXBuildFile; fileRef = E77EA5342BAEAFE800B91E98 /* Expressions.swift */; };
 		E77EA5412BAECA5100B91E98 /* JackCompiler.swift in Sources */ = {isa = PBXBuildFile; fileRef = E77EA5402BAECA5100B91E98 /* JackCompiler.swift */; };
 		E77EA5432BAECB1300B91E98 /* SymbolTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = E77EA5422BAECB1300B91E98 /* SymbolTable.swift */; };
-		E77EA5452BAECBC200B91E98 /* VMWriter.swift in Sources */ = {isa = PBXBuildFile; fileRef = E77EA5442BAECBC200B91E98 /* VMWriter.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -45,7 +44,6 @@
 		E77EA5342BAEAFE800B91E98 /* Expressions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Expressions.swift; sourceTree = "<group>"; };
 		E77EA5402BAECA5100B91E98 /* JackCompiler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JackCompiler.swift; sourceTree = "<group>"; };
 		E77EA5422BAECB1300B91E98 /* SymbolTable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SymbolTable.swift; sourceTree = "<group>"; };
-		E77EA5442BAECBC200B91E98 /* VMWriter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMWriter.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -85,7 +83,6 @@
 				E77EA52D2BAEAFE800B91E98 /* JackTokenizer.swift */,
 				E77EA5402BAECA5100B91E98 /* JackCompiler.swift */,
 				E77EA5422BAECB1300B91E98 /* SymbolTable.swift */,
-				E77EA5442BAECBC200B91E98 /* VMWriter.swift */,
 			);
 			path = JackCompiler;
 			sourceTree = "<group>";
@@ -195,7 +192,6 @@
 				E77EA5392BAEAFE800B91E98 /* Statements.swift in Sources */,
 				E77EA5382BAEAFE800B91E98 /* ProgramStructure.swift in Sources */,
 				E77EA53D2BAEAFE800B91E98 /* Expressions.swift in Sources */,
-				E77EA5452BAECBC200B91E98 /* VMWriter.swift in Sources */,
 				E77EA53B2BAEAFE800B91E98 /* Element.swift in Sources */,
 				E77EA5352BAEAFE800B91E98 /* CompilationEngine.swift in Sources */,
 				E77EA53C2BAEAFE800B91E98 /* Token.swift in Sources */,
@@ -327,6 +323,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = G6MNY5K23G;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -340,6 +337,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = G6MNY5K23G;
 				ENABLE_HARDENED_RUNTIME = YES;

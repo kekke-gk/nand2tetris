@@ -7,142 +7,214 @@
 
 import Foundation
 
-struct Class: NonTerminalElement {
+class Class: NonTerminalElement {
     var elements: [any Element] = []
-    init() {}
+    required init() {}
 
     var name: String {
         return "class"
     }
 
-    mutating func compile(_ context: Context) throws {
-        try must(context, [Keyword.class_])
-        try must(context, Identifier.self)
-        try must(context, [Symbol.curlyBracketL])
+    var className: String?
 
-        while may(context, ClassVarDec.self) {}
+    var subroutineDecs: [SubroutineDec] = []
 
-        while may(context, SubroutineDec.self) {}
+    func compile(_ context: Context) throws {
+        let _ = try must(context, [Keyword.class_])
+        let identifier = try must(context, Identifier.self)
+        className = identifier.value()
+        let _ = try must(context, [Symbol.curlyBracketL])
 
-        try must(context, [Symbol.curlyBracketR])
+        try context.varSymbolTable.define(name: className!, type: className!, kind: .class_, scope: .global)
+
+        while let _ = may(context, ClassVarDec.self) {}
+
+        while let subroutineDec = may(context, SubroutineDec.self) {
+            subroutineDecs.append(subroutineDec)
+        }
+
+        let _ = try must(context, [Symbol.curlyBracketR])
+    }
+
+    func vmcode(_ varSymbolTable: VarSymbolTable, _ funcSymbolTable: FuncSymbolTable) throws -> String  {
+        var code = ""
+        for subroutineDec in subroutineDecs {
+            code += try subroutineDec.vmcode(varSymbolTable, funcSymbolTable)
+        }
+        return code
     }
 }
 
-struct ClassVarDec: NonTerminalElement {
+class ClassVarDec: NonTerminalElement {
     var elements: [any Element] = []
-    init() {}
+    required init() {}
 
     var name: String {
         return "classVarDec"
     }
 
-    mutating func compile(_ context: Context) throws {
-        try must(context, [Keyword.static_, .field_])
-        try must(context, Type.self)
-        try must(context, Identifier.self)
+    func compile(_ context: Context) throws {
+        let keyword = try must(context, [Keyword.static_, .field_])
+        let kind: VarSymbolKind = keyword == .static_ ? .static_ : .field_
+        let type = try must(context, Type.self)
+        let varName = try must(context, Identifier.self)
 
-        while may(context, [Symbol.comma]) {
-            try must(context, Identifier.self)
+        try context.varSymbolTable.define(name: varName.value(), type: type.value!, kind: kind, scope: context.getCurrentScope())
+
+        while let _ = may(context, [Symbol.comma]) {
+            let varName = try must(context, Identifier.self)
+            try context.varSymbolTable.define(name: varName.value(), type: type.value!, kind: kind, scope: context.getCurrentScope())
         }
 
-        try must(context, [Symbol.semicolon])
+        let _ = try must(context, [Symbol.semicolon])
     }
 }
 
-struct Type: NonTerminalTagLessElement {
+class Type: NonTerminalTagLessElement {
     var elements: [any Element] = []
-    init() {}
+    required init() {}
 
     var name: String {
         return ""
     }
 
-    mutating func compile(_ context: Context) throws {
-        if may(context, [Keyword.int_, .char_, .boolean_]) {
+    var value: String?
+
+    func compile(_ context: Context) throws {
+        if let type = may(context, [Keyword.int_, .char_, .boolean_]) {
+            value = type.value()
         } else {
-            try must(context, Identifier.self)
+            let type = try must(context, Identifier.self)
+            value = type.value()
         }
     }
 }
 
-struct SubroutineDec: NonTerminalElement {
+class SubroutineDec: NonTerminalElement {
     var elements: [any Element] = []
-    init() {}
+    required init() {}
 
     var name: String {
         return "subroutineDec"
     }
 
-    mutating func compile(_ context: Context) throws {
-        try must(context, [Keyword.constructor_, .function_, .method_])
+    var funcName: String?
 
-        if may(context, [Keyword.void_]) {
+    var className: String?
+    var subroutineBody: SubroutineBody?
+
+    var scope: Scope?
+
+    func compile(_ context: Context) throws {
+        let keyword = try must(context, [Keyword.constructor_, .function_, .method_])
+
+        let type: String
+        if let void = may(context, [Keyword.void_]) {
+            type = void.value()
         } else {
-            try must(context, Type.self)
+            let t = try must(context, Type.self)
+            type = t.value!
         }
-        try must(context, Identifier.self)
+        let identifier = try must(context, Identifier.self)
+        self.funcName = identifier.value()
+
+        scope = context.getCurrentScope()
+        if case .subroutine(let className, _) = scope {
+            self.className = className
+        } else {
+            throw JackError.failedToCompile(0, "This subroutine is defined outside a class.")
+        }
+
         try must(context, [Symbol.bracketL])
-        try must(context, ParameterList.self)
+        let parameterList = try must(context, ParameterList.self)
         try must(context, [Symbol.bracketR])
-        try must(context, SubroutineBody.self)
+        subroutineBody = try must(context, SubroutineBody.self)
+
+        if keyword == .method_ {
+        } else {
+//            context.globalSymbolTable.define(name: funcName.value(), type: type, kind: .subroutine_)
+        }
+    }
+
+    func vmcode(_ varSymbolTable: VarSymbolTable, _ funcSymbolTable: FuncSymbolTable) throws -> String {
+        let varNum = varSymbolTable.varCount(kind: .var_, scope: scope!)
+        return """
+        function \(className!).\(funcName!) \(varNum)
+        \(try subroutineBody!.vmcode(varSymbolTable, funcSymbolTable))
+        """
     }
 }
 
-struct ParameterList: NonTerminalElement {
+class ParameterList: NonTerminalElement {
     var elements: [any Element] = []
-    init() {}
+    required init() {}
 
     var name: String {
         return "parameterList"
     }
 
-    mutating func compile(_ context: Context) throws {
-        if may(context, Type.self) {
-            try must(context, Identifier.self)
+    func compile(_ context: Context) throws {
+        let scope = context.getCurrentScope()
+        if let type = may(context, Type.self) {
+            let identifier = try must(context, Identifier.self)
+            try context.varSymbolTable.define(name: identifier.value(), type: type.value!, kind: .arg_, scope: scope)
         } else {
             return
         }
 
-        while may(context, [Symbol.comma]) {
-            try must(context, Type.self)
-            try must(context, Identifier.self)
+        while let _ = may(context, [Symbol.comma]) {
+            let type = try must(context, Type.self)
+            let identifier = try must(context, Identifier.self)
+            try context.varSymbolTable.define(name: identifier.value(), type: type.value!, kind: .arg_, scope: scope)
         }
     }
 }
 
-struct SubroutineBody: NonTerminalElement {
+class SubroutineBody: NonTerminalElement {
     var elements: [any Element] = []
-    init() {}
+    required init() {}
 
     var name: String {
         return "subroutineBody"
     }
 
-    mutating func compile(_ context: Context) throws {
-        try must(context, [Symbol.curlyBracketL])
+    var statements: Statements?
 
-        while may(context, VarDec.self) {}
+    func compile(_ context: Context) throws {
+        let _ = try must(context, [Symbol.curlyBracketL])
 
-        try must(context, Statements.self)
-        try must(context, [Symbol.curlyBracketR])
+        while let _ = may(context, VarDec.self) {}
+
+        statements = try must(context, Statements.self)
+        let _ = try must(context, [Symbol.curlyBracketR])
+    }
+
+    func vmcode(_ varSymbolTable: VarSymbolTable, _ funcSymbolTable: FuncSymbolTable) throws -> String {
+        return try statements!.vmcode(varSymbolTable, funcSymbolTable)
     }
 }
 
-struct VarDec: NonTerminalElement {
+class VarDec: NonTerminalElement {
     var elements: [any Element] = []
-    init() {}
+    required init() {}
 
     var name: String {
         return "varDec"
     }
 
-    mutating func compile(_ context: Context) throws {
+    func compile(_ context: Context) throws {
         try must(context, [Keyword.var_])
-        try must(context, Type.self)
-        try must(context, Identifier.self)
+        let type = try must(context, Type.self)
+        let identifier = try must(context, Identifier.self)
 
-        while may(context, [Symbol.comma]) {
-            try must(context, Identifier.self)
+        let scope = context.getCurrentScope()
+        print("Define in vardec", identifier.value(), scope)
+        try context.varSymbolTable.define(name: identifier.value(), type: type.value!, kind: .var_, scope: scope)
+
+        while let _ = may(context, [Symbol.comma]) {
+            let identifier = try must(context, Identifier.self)
+            print("Define in vardec", identifier.value())
+            try context.varSymbolTable.define(name: identifier.value(), type: type.value!, kind: .var_, scope: scope)
         }
 
         try must(context, [Symbol.semicolon])
