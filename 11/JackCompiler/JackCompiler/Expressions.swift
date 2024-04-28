@@ -136,17 +136,22 @@ class Term: NonTerminalElement {
                 try must(context, [Symbol.squareBracketR])
                 return
             } else if let _ = may(context, [Symbol.bracketL]) {
-                // varName(exp1, exp2, ..., expn)
+                // funcName(exp1, exp2, ..., expn)
                 let expressionList = try must(context, ExpressionList.self)
                 let argNum = expressionList.expressions.count
                 try must(context, [Symbol.bracketR])
                 vmcodeFunc = { (varSymbolTable, funcSymbolTable) in
-                    let varName = identifier.value()
-                    guard let varSymbol = varSymbolTable[varName, scope] else {
-                        throw JackError.failedToCompile(0, "\(varName) is not found.")
+                    let funcName = identifier.value()
+                    guard let funcSymbol = funcSymbolTable[funcName, scope] else {
+                        throw JackError.failedToCompile(0, "\(funcName) is not found.")
                     }
                     var code = try expressionList.vmcode(varSymbolTable, funcSymbolTable)
-                    code += "call \(varName) \(argNum)\n"
+                    if case .class_(let className) = funcSymbol.scope {
+                        code += "push pointer 0\n"
+                        code += "call \(className).\(funcName) \(argNum + 1)\n"
+                    } else {
+                        throw JackError.failedToCompile(0, "This subroutine (\(funcSymbol.name) is defined outside a class.")
+                    }
                     return code
                 }
                 return
@@ -164,8 +169,18 @@ class Term: NonTerminalElement {
                     guard let varSymbol = varSymbolTable[varName, scope] else {
                         throw JackError.failedToCompile(0, "\(varName) is not found.")
                     }
-                    var code = try expressionList.vmcode(varSymbolTable, funcSymbolTable)
-                    code += "call \(varName).\(funcName) \(argNum)\n"
+
+                    var code = ""
+//                    print("******************")
+//                    print(varSymbol)
+                    if varSymbol.kind == .class_ {
+                        code = try expressionList.vmcode(varSymbolTable, funcSymbolTable)
+                        code += "call \(varName).\(funcName) \(argNum)\n"
+                    } else {
+                        code = try expressionList.vmcode(varSymbolTable, funcSymbolTable)
+                        code += "push \(varSymbol.kind.rawValue) \(varSymbol.index)\n"
+                        code += "call \(varSymbol.type).\(funcName) \(argNum + 1)\n"
+                    }
                     return code
                 }
                 return

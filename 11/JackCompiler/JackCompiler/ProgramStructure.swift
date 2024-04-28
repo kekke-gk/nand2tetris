@@ -104,6 +104,7 @@ class SubroutineDec: NonTerminalElement {
     var subroutineBody: SubroutineBody?
 
     var scope: Scope?
+    var funcScope: Scope?
 
     func compile(_ context: Context) throws {
         let keyword = try must(context, [Keyword.constructor_, .function_, .method_])
@@ -125,23 +126,37 @@ class SubroutineDec: NonTerminalElement {
             throw JackError.failedToCompile(0, "This subroutine is defined outside a class.")
         }
 
+        let kind = FuncSymbolKind(rawValue: keyword.value())!
+        funcScope = Scope.class_(className!)
+        try context.funcSymbolTable.define(name: self.funcName!, returnType: type, kind: kind, scope: funcScope!)
+
         try must(context, [Symbol.bracketL])
         let parameterList = try must(context, ParameterList.self)
         try must(context, [Symbol.bracketR])
         subroutineBody = try must(context, SubroutineBody.self)
-
-        if keyword == .method_ {
-        } else {
-//            context.globalSymbolTable.define(name: funcName.value(), type: type, kind: .subroutine_)
-        }
     }
 
     func vmcode(_ varSymbolTable: VarSymbolTable, _ funcSymbolTable: FuncSymbolTable) throws -> String {
+        guard let funcSymbol = funcSymbolTable[funcName!, funcScope!] else {
+            throw JackError.failedToCompile(0, "\(funcName!) is not defined.")
+        }
+
         let varNum = varSymbolTable.varCount(kind: .var_, scope: scope!)
-        return """
-        function \(className!).\(funcName!) \(varNum)
-        \(try subroutineBody!.vmcode(varSymbolTable, funcSymbolTable))
-        """
+        var code = "function \(className!).\(funcName!) \(varNum)\n"
+
+        if funcSymbol.kind == .constructor {
+            let fieldNum = varSymbolTable.varCount(kind: .field_, scope: funcScope!)
+            code += "push constant \(fieldNum)\n"
+            code += "call Memory.alloc 1\n"
+            code += "pop pointer 0\n"
+        } else if funcSymbol.kind == .method {
+            code += "push argument 0\n"
+            code += "pop pointer 0\n"
+        }
+
+        code += try subroutineBody!.vmcode(varSymbolTable, funcSymbolTable)
+
+        return code
     }
 }
 
@@ -208,12 +223,10 @@ class VarDec: NonTerminalElement {
         let identifier = try must(context, Identifier.self)
 
         let scope = context.getCurrentScope()
-        print("Define in vardec", identifier.value(), scope)
         try context.varSymbolTable.define(name: identifier.value(), type: type.value!, kind: .var_, scope: scope)
 
         while let _ = may(context, [Symbol.comma]) {
             let identifier = try must(context, Identifier.self)
-            print("Define in vardec", identifier.value())
             try context.varSymbolTable.define(name: identifier.value(), type: type.value!, kind: .var_, scope: scope)
         }
 

@@ -108,15 +108,26 @@ class IfStatement: NonTerminalElement {
         let labelFalse = "IF_FALSE\(labelUniqueNum!)"
         let labelEnd = "IF_END\(labelUniqueNum!)"
 
-        var code = try expression!.vmcode(varSymbolTable, funcSymbolTable)
-        code += "if-goto \(labelTrue)\n"
-        code += "goto \(labelFalse)\n"
-        code += "label \(labelTrue)\n"
-        code += try statements!.vmcode(varSymbolTable, funcSymbolTable)
-        code += "goto \(labelEnd)\n"
-        code += "label \(labelFalse)\n"
-        code += try statementsElse!.vmcode(varSymbolTable, funcSymbolTable)
-        code += "label \(labelEnd)\n"
+        var code = ""
+        if let statementsElse = statementsElse {
+            code = try expression!.vmcode(varSymbolTable, funcSymbolTable)
+            code += "if-goto \(labelTrue)\n"
+            code += "goto \(labelFalse)\n"
+            code += "label \(labelTrue)\n"
+            code += try statements!.vmcode(varSymbolTable, funcSymbolTable)
+            code += "goto \(labelEnd)\n"
+            code += "label \(labelFalse)\n"
+            code += try statementsElse.vmcode(varSymbolTable, funcSymbolTable)
+            code += "label \(labelEnd)\n"
+        } else {
+            code = try expression!.vmcode(varSymbolTable, funcSymbolTable)
+            code += "if-goto \(labelTrue)\n"
+            code += "goto \(labelFalse)\n"
+            code += "label \(labelTrue)\n"
+            code += try statements!.vmcode(varSymbolTable, funcSymbolTable)
+            code += "label \(labelFalse)\n"
+        }
+
 
 //        var code = try expression!.vmcode(varSymbolTable, funcSymbolTable)
 //        code += "not\n"
@@ -148,11 +159,12 @@ class WhileStatement: NonTerminalElement {
         try must(context, [Symbol.bracketL])
         expression = try must(context, Expression.self)
         try must(context, [Symbol.bracketR])
+
+        labelUniqueNum = context.getUniqueNumber(scope: context.getCurrentScope(), kind: .while_)
+
         try must(context, [Symbol.curlyBracketL])
         statements = try must(context, Statements.self)
         try must(context, [Symbol.curlyBracketR])
-
-        labelUniqueNum = context.getUniqueNumber(scope: context.getCurrentScope(), kind: .while_)
     }
 
     func vmcode(_ varSymbolTable: VarSymbolTable, _ funcSymbolTable: FuncSymbolTable) throws -> String {
@@ -178,35 +190,49 @@ class DoStatement: NonTerminalElement {
         return "doStatement"
     }
 
-    var funcName: String?
-    var argNum: Int?
-    var expressionList: ExpressionList?
+//    var funcName: String?
+//    var argNum: Int?
+//    var expressionList: ExpressionList?
+
+    var term: Term?
 
     func compile(_ context: Context) throws {
         try must(context, [Keyword.do_])
-        let identifier = try must(context, Identifier.self)
 
-        if let _ = may(context, [Symbol.bracketL]) {
-            funcName = identifier.value()
-            expressionList = try must(context, ExpressionList.self)
-            argNum = expressionList!.expressions.count
-            try must(context, [Symbol.bracketR])
-        } else {
-            try must(context, [Symbol.period])
-            let identifier2 = try must(context, Identifier.self)
-            funcName = "\(identifier.value()).\(identifier2.value())"
-            try must(context, [Symbol.bracketL])
-            expressionList = try must(context, ExpressionList.self)
-            argNum = expressionList!.expressions.count
-            try must(context, [Symbol.bracketR])
-        }
+
+
+        term = try must(context, Term.self)
+
+//        let identifier = try must(context, Identifier.self)
+//
+//        if let _ = may(context, [Symbol.bracketL]) {
+//            funcName = identifier.value()
+//            expressionList = try must(context, ExpressionList.self)
+//            argNum = expressionList!.expressions.count
+//            try must(context, [Symbol.bracketR])
+//        } else {
+//            try must(context, [Symbol.period])
+//            let identifier2 = try must(context, Identifier.self)
+//            funcName = "\(identifier.value()).\(identifier2.value())"
+//            try must(context, [Symbol.bracketL])
+//            expressionList = try must(context, ExpressionList.self)
+//            argNum = expressionList!.expressions.count
+//            try must(context, [Symbol.bracketR])
+//        }
+
+
+
+
 
         try must(context, [Symbol.semicolon])
     }
 
     func vmcode(_ varSymbolTable: VarSymbolTable, _ funcSymbolTable: FuncSymbolTable) throws -> String {
-        var code = try expressionList!.vmcode(varSymbolTable, funcSymbolTable)
-        code += "call \(funcName!) \(argNum!)\n"
+//        var code = try expressionList!.vmcode(varSymbolTable, funcSymbolTable)
+//        code += "call \(funcName!) \(argNum!)\n"
+//        code += "pop temp 0\n"
+//        return code
+        var code = try term!.vmcode(varSymbolTable, funcSymbolTable)
         code += "pop temp 0\n"
         return code
     }

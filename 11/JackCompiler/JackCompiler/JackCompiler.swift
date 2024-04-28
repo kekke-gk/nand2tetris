@@ -52,17 +52,20 @@ struct JackCompiler: ParsableCommand {
         let funcSymbolTable = FuncSymbolTable()
 
         try varSymbolTable.define(name: "Memory", type: "Memory", kind: .class_, scope: .global)
+        try varSymbolTable.define(name: "Keyboard", type: "Keyboard", kind: .class_, scope: .global)
+        try varSymbolTable.define(name: "Screen", type: "Screen", kind: .class_, scope: .global)
+        try varSymbolTable.define(name: "Sys", type: "Sys", kind: .class_, scope: .global)
 
-        for jackURL in jackURLs {
+        for (i, jackURL) in jackURLs.enumerated() {
             let jackTokenizer = try JackTokenizer(fileURL: jackURL)
             try jackTokenizer.tokenize()
-            print("Tokenization ended successfully")
+            print("[\(i+1)/\(jackURLs.count)] Tokenization ended successfully")
 
             let compilationEngine = CompilationEngine(tokensList: jackTokenizer.tokensList)
             try compilationEngine.context.varSymbolTable.update(varSymbolTable)
             try compilationEngine.context.funcSymbolTable.update(funcSymbolTable)
             try compilationEngine.compile()
-            print("Compilation ended successfully")
+            print("[\(i+1)/\(jackURLs.count)] Compilation ended successfully")
 
             try varSymbolTable.update(compilationEngine.context.varSymbolTable)
             try funcSymbolTable.update(compilationEngine.context.funcSymbolTable)

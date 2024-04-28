@@ -11,12 +11,13 @@ class VarSymbolTable {
     var symbols: [VarSymbol] = []
 
     func define(name: String, type: String = "", kind: VarSymbolKind, scope: Scope) throws {
-        print("define", name, "in", scope)
+//        print("try to define", name, "in", scope)
         guard symbols.filter({ $0.name == name && $0.scope == scope }).isEmpty else {
-            print("    Failed")
+//            print("    Failed")
             throw JackError.failedToCompile(0, "\(name) is already defined in this scope.")
         }
         let symbol = VarSymbol(name: name, type: type, kind: kind, index: varCount(kind: kind, scope: scope), scope: scope)
+//        print("defined", name, "in", scope, type, kind)
         symbols.append(symbol)
     }
 
@@ -43,11 +44,12 @@ class VarSymbolTable {
 class FuncSymbolTable {
     var symbols: [FuncSymbol] = []
 
-    func define(name: String, returnType: String = "", scope: Scope) throws {
+    func define(name: String, returnType: String = "", kind: FuncSymbolKind, scope: Scope) throws {
         guard symbols.filter({ $0.name == name && $0.scope == scope }).isEmpty else {
             throw JackError.failedToCompile(0, "\(name) is already defined in this scope.")
         }
-        let symbol = FuncSymbol(name: name, returnType: returnType, scope: scope)
+        let symbol = FuncSymbol(name: name, returnType: returnType, kind: kind, scope: scope)
+        print(symbol)
         symbols.append(symbol)
     }
 
@@ -79,6 +81,7 @@ struct VarSymbol: Hashable {
 struct FuncSymbol: Hashable {
     var name: String
     var returnType: String
+    var kind: FuncSymbolKind
     var scope: Scope
 }
 
@@ -88,6 +91,12 @@ enum VarSymbolKind: String, Hashable {
     case arg_ = "argument"
     case var_ = "local"
     case class_ = "class"
+}
+
+enum FuncSymbolKind: String, Hashable {
+    case function
+    case method
+    case constructor
 }
 
 enum Scope: Comparable, Hashable {
