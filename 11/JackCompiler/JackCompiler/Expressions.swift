@@ -112,6 +112,17 @@ class Term: NonTerminalElement {
             return
         }
         if let strConst = may(context, StrConst.self) {
+            let str = strConst.value()
+            vmcodeFunc = { (_, _) in
+                var code = ""
+                code += "push constant \(str.count)\n"
+                code += "call String.new 1\n"
+                for scalar in str.unicodeScalars {
+                    code += "push constant \(scalar.value)\n"
+                    code += "call String.appendChar 2\n"
+                }
+                return code
+            }
             return
         }
         if let keyword = may(context, [Keyword.true_, .false_, .null_, .this_]) {
@@ -132,8 +143,21 @@ class Term: NonTerminalElement {
             let scope = context.getCurrentScope()
             if let _ = may(context, [Symbol.squareBracketL]) {
                 // varName[expression]
-                try must(context, Expression.self)
+                let expression = try must(context, Expression.self)
                 try must(context, [Symbol.squareBracketR])
+                vmcodeFunc = { (varSymbolTable, funcSymbolTable) in
+                    let varName = identifier.value()
+                    guard let varSymbol = varSymbolTable[varName, scope] else {
+                        throw JackError.failedToCompile(0, "\(varName) is not found.")
+                    }
+                    var code = ""
+                    code += try expression.vmcode(varSymbolTable, funcSymbolTable)
+                    code += "push \(varSymbol.kind.rawValue) \(varSymbol.index)\n"
+                    code += "add\n"
+                    code += "pop pointer 1\n"
+                    code += "push that 0\n"
+                    return code
+                }
                 return
             } else if let _ = may(context, [Symbol.bracketL]) {
                 // funcName(exp1, exp2, ..., expn)
@@ -191,10 +215,7 @@ class Term: NonTerminalElement {
                 guard let varSymbol = varSymbolTable[varName, scope] else {
                     throw JackError.failedToCompile(0, "\(varName) is not found.")
                 }
-                if let varSymbol = varSymbolTable[varName, scope] {
-                    return "push \(varSymbol.kind.rawValue) \(varSymbol.index)\n"
-                }
-                return "push Neoantuhaonetuhau"
+                return "push \(varSymbol.kind.rawValue) \(varSymbol.index)\n"
             }
             return
         }

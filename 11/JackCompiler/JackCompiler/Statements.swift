@@ -42,6 +42,7 @@ class LetStatement: NonTerminalElement {
     }
 
     var varName: String?
+    var arrayExpression: Expression?
     var expression: Expression?
     var scope: Scope?
 
@@ -51,7 +52,7 @@ class LetStatement: NonTerminalElement {
         varName = identifier.value()
 
         if let _ = may(context, [Symbol.squareBracketL]) {
-            try must(context, Expression.self)
+            arrayExpression = try must(context, Expression.self)
             try must(context, [Symbol.squareBracketR])
         }
 
@@ -66,8 +67,22 @@ class LetStatement: NonTerminalElement {
         guard let varSymbol = varSymbolTable[varName!, scope!] else {
             throw JackError.failedToCompile(0, "\(varName!) is not defined in \(scope!).")
         }
-        var code = try expression!.vmcode(varSymbolTable, funcSymbolTable)
-        code += "pop \(varSymbol.kind.rawValue) \(varSymbol.index)\n"
+
+        var code = ""
+        if let arrayExp = arrayExpression {
+            code += try arrayExp.vmcode(varSymbolTable, funcSymbolTable)
+            code += "push \(varSymbol.kind.rawValue) \(varSymbol.index)\n"
+            code += "add\n"
+        }
+        code += try expression!.vmcode(varSymbolTable, funcSymbolTable)
+        if let arrayExp = arrayExpression {
+            code += "pop temp 0\n"
+            code += "pop pointer 1\n"
+            code += "push temp 0\n"
+            code += "pop that 0\n"
+        } else {
+            code += "pop \(varSymbol.kind.rawValue) \(varSymbol.index)\n"
+        }
         return code
     }
 }
