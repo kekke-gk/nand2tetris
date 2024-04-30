@@ -10,13 +10,16 @@ import Foundation
 class VarSymbolTable {
     var symbols: [VarSymbol] = []
 
-    func define(name: String, type: String = "", kind: VarSymbolKind, scope: Scope) throws {
+    func define(name: String, type: String = "", kind: VarSymbolKind, scope: Scope, definedIn: FuncSymbolKind = .function) throws {
 //        print("try to define", name, "in", scope)
         guard symbols.filter({ $0.name == name && $0.scope == scope }).isEmpty else {
 //            print("    Failed")
             throw JackError.failedToCompile(0, "\(name) is already defined in this scope.")
         }
-        let symbol = VarSymbol(name: name, type: type, kind: kind, index: varCount(kind: kind, scope: scope), scope: scope)
+
+        let varCount = varCount(kind: kind, scope: scope)
+        let index = definedIn == .method ? varCount + 1 : varCount
+        let symbol = VarSymbol(name: name, type: type, kind: kind, index: index, scope: scope)
 //        print("defined", name, "in", scope, type, kind)
         symbols.append(symbol)
     }

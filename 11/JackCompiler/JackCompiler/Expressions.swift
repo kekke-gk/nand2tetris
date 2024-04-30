@@ -169,13 +169,15 @@ class Term: NonTerminalElement {
                     guard let funcSymbol = funcSymbolTable[funcName, scope] else {
                         throw JackError.failedToCompile(0, "\(funcName) is not found.")
                     }
-                    var code = try expressionList.vmcode(varSymbolTable, funcSymbolTable)
-                    if case .class_(let className) = funcSymbol.scope {
-                        code += "push pointer 0\n"
-                        code += "call \(className).\(funcName) \(argNum + 1)\n"
-                    } else {
+
+                    guard case .class_(let className) = funcSymbol.scope else {
                         throw JackError.failedToCompile(0, "This subroutine (\(funcSymbol.name) is defined outside a class.")
                     }
+
+                    var code = ""
+                    code += "push pointer 0\n"
+                    code += try expressionList.vmcode(varSymbolTable, funcSymbolTable)
+                    code += "call \(className).\(funcName) \(argNum + 1)\n"
                     return code
                 }
                 return
@@ -198,11 +200,11 @@ class Term: NonTerminalElement {
 //                    print("******************")
 //                    print(varSymbol)
                     if varSymbol.kind == .class_ {
-                        code = try expressionList.vmcode(varSymbolTable, funcSymbolTable)
+                        code += try expressionList.vmcode(varSymbolTable, funcSymbolTable)
                         code += "call \(varName).\(funcName) \(argNum)\n"
                     } else {
-                        code = try expressionList.vmcode(varSymbolTable, funcSymbolTable)
                         code += "push \(varSymbol.kind.rawValue) \(varSymbol.index)\n"
+                        code += try expressionList.vmcode(varSymbolTable, funcSymbolTable)
                         code += "call \(varSymbol.type).\(funcName) \(argNum + 1)\n"
                     }
                     return code

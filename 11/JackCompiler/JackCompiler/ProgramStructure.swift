@@ -170,9 +170,18 @@ class ParameterList: NonTerminalElement {
 
     func compile(_ context: Context) throws {
         let scope = context.getCurrentScope()
+
+        guard case .subroutine(let className, let funcName) = scope else {
+            throw JackError.failedToCompile(0, "\(name) has wrong scope.")
+        }
+
+        guard let funcSymbol = context.funcSymbolTable[funcName, .class_(className)] else {
+            throw JackError.failedToCompile(0, "\(funcName) is not defined.")
+        }
+
         if let type = may(context, Type.self) {
             let identifier = try must(context, Identifier.self)
-            try context.varSymbolTable.define(name: identifier.value(), type: type.value!, kind: .arg_, scope: scope)
+            try context.varSymbolTable.define(name: identifier.value(), type: type.value!, kind: .arg_, scope: scope, definedIn: funcSymbol.kind)
         } else {
             return
         }
@@ -180,7 +189,7 @@ class ParameterList: NonTerminalElement {
         while let _ = may(context, [Symbol.comma]) {
             let type = try must(context, Type.self)
             let identifier = try must(context, Identifier.self)
-            try context.varSymbolTable.define(name: identifier.value(), type: type.value!, kind: .arg_, scope: scope)
+            try context.varSymbolTable.define(name: identifier.value(), type: type.value!, kind: .arg_, scope: scope, definedIn: funcSymbol.kind)
         }
     }
 }
@@ -223,6 +232,7 @@ class VarDec: NonTerminalElement {
         let identifier = try must(context, Identifier.self)
 
         let scope = context.getCurrentScope()
+
         try context.varSymbolTable.define(name: identifier.value(), type: type.value!, kind: .var_, scope: scope)
 
         while let _ = may(context, [Symbol.comma]) {

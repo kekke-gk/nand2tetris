@@ -57,6 +57,7 @@ struct JackCompiler: ParsableCommand {
         try varSymbolTable.define(name: "Sys", type: "Sys", kind: .class_, scope: .global)
         try varSymbolTable.define(name: "Array", type: "Array", kind: .class_, scope: .global)
         try varSymbolTable.define(name: "Output", type: "Output", kind: .class_, scope: .global)
+        try varSymbolTable.define(name: "Math", type: "Math", kind: .class_, scope: .global)
 
         for (i, jackURL) in jackURLs.enumerated() {
             let jackTokenizer = try JackTokenizer(fileURL: jackURL)
