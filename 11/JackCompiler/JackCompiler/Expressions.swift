@@ -11,9 +11,7 @@ class Expression: NonTerminalElement {
     var elements: [any Element] = []
     required init() {}
 
-    var name: String {
-        return "expression"
-    }
+    var name: String { "expression" }
 
     var terms: [Term] = []
     var ops: [Symbol] = []
@@ -69,9 +67,7 @@ class ExpressionList: NonTerminalElement {
     var elements: [any Element] = []
     required init() {}
 
-    var name: String {
-        return "expressionList"
-    }
+    var name: String { "expressionList" }
 
     var expressions: [Expression] = []
 
@@ -98,9 +94,7 @@ class Term: NonTerminalElement {
     var elements: [any Element] = []
     required init() {}
 
-    var name: String {
-        return "term"
-    }
+    var name: String { "term" }
 
     var vmcodeFunc: ((VarSymbolTable, FuncSymbolTable) throws -> String)? = nil
 
@@ -127,7 +121,6 @@ class Term: NonTerminalElement {
         }
         if let keyword = may(context, [Keyword.true_, .false_, .null_, .this_]) {
             let dict: [Keyword: String] = [
-//                .true_: "constant 1\nneg",
                 .true_: "constant 0\nnot",
                 .false_: "constant 0",
                 .null_: "constant 0",
@@ -197,8 +190,6 @@ class Term: NonTerminalElement {
                     }
 
                     var code = ""
-//                    print("******************")
-//                    print(varSymbol)
                     if varSymbol.kind == .class_ {
                         code += try expressionList.vmcode(varSymbolTable, funcSymbolTable)
                         code += "call \(varName).\(funcName) \(argNum)\n"
@@ -240,17 +231,18 @@ class Term: NonTerminalElement {
             .tilde: "not\n",
         ]
         vmcodeFunc = { (varSymbolTable, funcSymbolTable) in
-            var code = try term.vmcode(varSymbolTable, funcSymbolTable)
+            var code = ""
+            code += try term.vmcode(varSymbolTable, funcSymbolTable)
             code += dict[symbol]!
             return code
         }
     }
 
     func vmcode(_ varSymbolTable: VarSymbolTable, _ funcSymbolTable: FuncSymbolTable) throws -> String {
-        if let f = vmcodeFunc {
-            return try f(varSymbolTable, funcSymbolTable)
+        guard let f = vmcodeFunc else {
+            throw JackError.failedToCompile(0, "")
         }
 
-        return "Not Defined"
+        return try f(varSymbolTable, funcSymbolTable)
     }
 }

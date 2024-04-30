@@ -24,9 +24,7 @@ func initTerminalElement(_ str: String) -> (any TerminalElement)? {
 }
 
 enum Keyword: String, CaseIterable, TerminalElement {
-    var name: String {
-        return "keyword"
-    }
+    var name: String { "keyword" }
 
     case class_ = "class"
     case constructor_ = "constructor"
@@ -54,17 +52,13 @@ enum Keyword: String, CaseIterable, TerminalElement {
         self.init(rawValue: str)
     }
 
-    func value() -> String {
-        return self.rawValue
-    }
+    func value() -> String { self.rawValue }
 
     static let allValues = allCases.map(\.rawValue)
 }
 
 enum Symbol: String, CaseIterable, TerminalElement {
-    var name: String {
-        return "symbol"
-    }
+    var name: String { "symbol" }
 
     case curlyBracketL = "{"
     case curlyBracketR = "}"
@@ -90,71 +84,55 @@ enum Symbol: String, CaseIterable, TerminalElement {
         self.init(rawValue: str)
     }
 
-    func value() -> String {
-        return self.rawValue
-    }
+    func value() -> String { self.rawValue }
 
     static let allValues = allCases.map(\.rawValue)
 }
 
 struct IntConst: TerminalElement {
-    var name: String {
-        return "integerConstant"
-    }
+    var name: String { "integerConstant" }
 
     let intValue: Int
 
     init?(_ str: String) {
-        if let int = Int(str) {
-            self.intValue = int
-        } else {
+        guard let int = Int(str) else {
             return nil
         }
+        self.intValue = int
     }
 
-    func value() -> String {
-        return String(intValue)
-    }
+    func value() -> String { String(intValue) }
 }
 
 struct StrConst: TerminalElement {
-    var name: String {
-        return "stringConstant"
-    }
+    var name: String { "stringConstant" }
 
     let strValue: String
 
     init?(_ str: String) {
-        if str.hasPrefix("\"") && str.hasSuffix("\"") {
-            self.strValue = String(str.dropFirst().dropLast())
-        } else {
+        guard str.hasPrefix("\"") && str.hasSuffix("\"") else {
             return nil
         }
+        self.strValue = String(str.dropFirst().dropLast())
     }
 
-    func value() -> String {
-        return strValue
-    }
+    func value() -> String { strValue }
 }
 
 struct Identifier: TerminalElement {
-    var name: String {
-        return "identifier"
-    }
+    var name: String { "identifier" }
 
     let identifier: String
+
 
     init?(_ str: String) {
         let regexIdentifier = /^[a-zA-Z_][\w_]*$/
 
-        if str.contains(regexIdentifier) {
-            self.identifier = str
-        } else {
+        guard str.contains(regexIdentifier) else {
             return nil
         }
+        self.identifier = str
     }
 
-    func value() -> String {
-        return identifier
-    }
+    func value() -> String { identifier }
 }

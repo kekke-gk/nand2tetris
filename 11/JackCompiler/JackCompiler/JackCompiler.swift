@@ -60,6 +60,8 @@ struct JackCompiler: ParsableCommand {
         try varSymbolTable.define(name: "Math", type: "Math", kind: .class_, scope: .global)
 
         for (i, jackURL) in jackURLs.enumerated() {
+            print("[\(i+1)/\(jackURLs.count)] \(jackURL.lastPathComponent)")
+            
             let jackTokenizer = try JackTokenizer(fileURL: jackURL)
             try jackTokenizer.tokenize()
             print("[\(i+1)/\(jackURLs.count)] Tokenization ended successfully")

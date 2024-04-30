@@ -11,19 +11,17 @@ class Class: NonTerminalElement {
     var elements: [any Element] = []
     required init() {}
 
-    var name: String {
-        return "class"
-    }
+    var name: String { "class" }
 
     var className: String?
 
     var subroutineDecs: [SubroutineDec] = []
 
     func compile(_ context: Context) throws {
-        let _ = try must(context, [Keyword.class_])
+        try must(context, [Keyword.class_])
         let identifier = try must(context, Identifier.self)
         className = identifier.value()
-        let _ = try must(context, [Symbol.curlyBracketL])
+        try must(context, [Symbol.curlyBracketL])
 
         try context.varSymbolTable.define(name: className!, type: className!, kind: .class_, scope: .global)
 
@@ -33,7 +31,7 @@ class Class: NonTerminalElement {
             subroutineDecs.append(subroutineDec)
         }
 
-        let _ = try must(context, [Symbol.curlyBracketR])
+        try must(context, [Symbol.curlyBracketR])
     }
 
     func vmcode(_ varSymbolTable: VarSymbolTable, _ funcSymbolTable: FuncSymbolTable) throws -> String  {
@@ -49,9 +47,7 @@ class ClassVarDec: NonTerminalElement {
     var elements: [any Element] = []
     required init() {}
 
-    var name: String {
-        return "classVarDec"
-    }
+    var name: String { "classVarDec" }
 
     func compile(_ context: Context) throws {
         let keyword = try must(context, [Keyword.static_, .field_])
@@ -66,7 +62,7 @@ class ClassVarDec: NonTerminalElement {
             try context.varSymbolTable.define(name: varName.value(), type: type.value!, kind: kind, scope: context.getCurrentScope())
         }
 
-        let _ = try must(context, [Symbol.semicolon])
+        try must(context, [Symbol.semicolon])
     }
 }
 
@@ -74,9 +70,7 @@ class Type: NonTerminalTagLessElement {
     var elements: [any Element] = []
     required init() {}
 
-    var name: String {
-        return ""
-    }
+    var name: String { "" }
 
     var value: String?
 
@@ -94,9 +88,7 @@ class SubroutineDec: NonTerminalElement {
     var elements: [any Element] = []
     required init() {}
 
-    var name: String {
-        return "subroutineDec"
-    }
+    var name: String { "subroutineDec" }
 
     var funcName: String?
 
@@ -144,14 +136,17 @@ class SubroutineDec: NonTerminalElement {
         let varNum = varSymbolTable.varCount(kind: .var_, scope: scope!)
         var code = "function \(className!).\(funcName!) \(varNum)\n"
 
-        if funcSymbol.kind == .constructor {
+        switch funcSymbol.kind {
+        case .constructor:
             let fieldNum = varSymbolTable.varCount(kind: .field_, scope: funcScope!)
             code += "push constant \(fieldNum)\n"
             code += "call Memory.alloc 1\n"
             code += "pop pointer 0\n"
-        } else if funcSymbol.kind == .method {
+        case .method:
             code += "push argument 0\n"
             code += "pop pointer 0\n"
+        default:
+            break
         }
 
         code += try subroutineBody!.vmcode(varSymbolTable, funcSymbolTable)
@@ -164,9 +159,7 @@ class ParameterList: NonTerminalElement {
     var elements: [any Element] = []
     required init() {}
 
-    var name: String {
-        return "parameterList"
-    }
+    var name: String { "parameterList" }
 
     func compile(_ context: Context) throws {
         let scope = context.getCurrentScope()
@@ -198,19 +191,17 @@ class SubroutineBody: NonTerminalElement {
     var elements: [any Element] = []
     required init() {}
 
-    var name: String {
-        return "subroutineBody"
-    }
+    var name: String { "subroutineBody" }
 
     var statements: Statements?
 
     func compile(_ context: Context) throws {
-        let _ = try must(context, [Symbol.curlyBracketL])
+        try must(context, [Symbol.curlyBracketL])
 
         while let _ = may(context, VarDec.self) {}
 
         statements = try must(context, Statements.self)
-        let _ = try must(context, [Symbol.curlyBracketR])
+        try must(context, [Symbol.curlyBracketR])
     }
 
     func vmcode(_ varSymbolTable: VarSymbolTable, _ funcSymbolTable: FuncSymbolTable) throws -> String {
@@ -222,9 +213,7 @@ class VarDec: NonTerminalElement {
     var elements: [any Element] = []
     required init() {}
 
-    var name: String {
-        return "varDec"
-    }
+    var name: String { "varDec" }
 
     func compile(_ context: Context) throws {
         try must(context, [Keyword.var_])

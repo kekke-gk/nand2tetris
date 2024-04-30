@@ -11,9 +11,7 @@ class Statements: NonTerminalElement {
     var elements: [any Element] = []
     required init() {}
 
-    var name: String {
-        return "statements"
-    }
+    var name: String { "statements" }
 
     func compile(_ context: Context) throws {
         while (may(context, LetStatement.self) != nil)
@@ -37,9 +35,7 @@ class LetStatement: NonTerminalElement {
     var elements: [any Element] = []
     required init() {}
 
-    var name: String {
-        return "letStatement"
-    }
+    var name: String { "letStatement" }
 
     var varName: String?
     var arrayExpression: Expression?
@@ -91,9 +87,7 @@ class IfStatement: NonTerminalElement {
     var elements: [any Element] = []
     required init() {}
 
-    var name: String {
-        return "ifStatement"
-    }
+    var name: String { "ifStatement" }
 
     var expression: Expression?
     var statements: Statements?
@@ -125,7 +119,7 @@ class IfStatement: NonTerminalElement {
 
         var code = ""
         if let statementsElse = statementsElse {
-            code = try expression!.vmcode(varSymbolTable, funcSymbolTable)
+            code += try expression!.vmcode(varSymbolTable, funcSymbolTable)
             code += "if-goto \(labelTrue)\n"
             code += "goto \(labelFalse)\n"
             code += "label \(labelTrue)\n"
@@ -142,16 +136,6 @@ class IfStatement: NonTerminalElement {
             code += try statements!.vmcode(varSymbolTable, funcSymbolTable)
             code += "label \(labelFalse)\n"
         }
-
-
-//        var code = try expression!.vmcode(varSymbolTable, funcSymbolTable)
-//        code += "not\n"
-//        code += "if-goto \(labelTrue)\n"
-//        code += try statements!.vmcode(varSymbolTable, funcSymbolTable)
-//        code += "goto \(labelFalse)\n"
-//        code += "label \(labelTrue)\n"
-//        code += try statementsElse!.vmcode(varSymbolTable, funcSymbolTable)
-//        code += "label \(labelFalse)\n"
         return code
     }
 }
@@ -160,9 +144,7 @@ class WhileStatement: NonTerminalElement {
     var elements: [any Element] = []
     required init() {}
 
-    var name: String {
-        return "whileStatement"
-    }
+    var name: String { "whileStatement" }
 
     var expression: Expression?
     var statements: Statements?
@@ -186,7 +168,8 @@ class WhileStatement: NonTerminalElement {
         let startLabel = "WHILE_EXP\(labelUniqueNum!)"
         let endLabel = "WHILE_END\(labelUniqueNum!)"
 
-        var code = "label \(startLabel)\n"
+        var code = ""
+        code += "label \(startLabel)\n"
         code += try expression!.vmcode(varSymbolTable, funcSymbolTable)
         code += "not\n"
         code += "if-goto \(endLabel)\n"
@@ -201,53 +184,19 @@ class DoStatement: NonTerminalElement {
     var elements: [any Element] = []
     required init() {}
 
-    var name: String {
-        return "doStatement"
-    }
-
-//    var funcName: String?
-//    var argNum: Int?
-//    var expressionList: ExpressionList?
+    var name: String { "doStatement" }
 
     var term: Term?
 
     func compile(_ context: Context) throws {
         try must(context, [Keyword.do_])
-
-
-
         term = try must(context, Term.self)
-
-//        let identifier = try must(context, Identifier.self)
-//
-//        if let _ = may(context, [Symbol.bracketL]) {
-//            funcName = identifier.value()
-//            expressionList = try must(context, ExpressionList.self)
-//            argNum = expressionList!.expressions.count
-//            try must(context, [Symbol.bracketR])
-//        } else {
-//            try must(context, [Symbol.period])
-//            let identifier2 = try must(context, Identifier.self)
-//            funcName = "\(identifier.value()).\(identifier2.value())"
-//            try must(context, [Symbol.bracketL])
-//            expressionList = try must(context, ExpressionList.self)
-//            argNum = expressionList!.expressions.count
-//            try must(context, [Symbol.bracketR])
-//        }
-
-
-
-
-
         try must(context, [Symbol.semicolon])
     }
 
     func vmcode(_ varSymbolTable: VarSymbolTable, _ funcSymbolTable: FuncSymbolTable) throws -> String {
-//        var code = try expressionList!.vmcode(varSymbolTable, funcSymbolTable)
-//        code += "call \(funcName!) \(argNum!)\n"
-//        code += "pop temp 0\n"
-//        return code
-        var code = try term!.vmcode(varSymbolTable, funcSymbolTable)
+        var code = ""
+        code += try term!.vmcode(varSymbolTable, funcSymbolTable)
         code += "pop temp 0\n"
         return code
     }
@@ -257,9 +206,7 @@ class ReturnStatement: NonTerminalElement {
     var elements: [any Element] = []
     required init() {}
 
-    var name: String {
-        return "returnStatement"
-    }
+    var name: String { "returnStatement" }
 
     var expression: Expression?
 
@@ -271,7 +218,8 @@ class ReturnStatement: NonTerminalElement {
 
     func vmcode(_ varSymbolTable: VarSymbolTable, _ funcSymbolTable: FuncSymbolTable) throws -> String {
         if let expression = expression {
-            var code = try expression.vmcode(varSymbolTable, funcSymbolTable)
+            var code = ""
+            code += try expression.vmcode(varSymbolTable, funcSymbolTable)
             code += "return\n"
             return code
         }

@@ -139,19 +139,14 @@ extension NonTerminalElement {
     }
 
     init(_ context: Context) throws {
-//        self = Self.init()
         self.init()
         let initialContext = context.copy()
-        let s = String(repeating: "  ", count: context.elementsStack.count)
         do {
             context.elementsStack.append(self)
-//            print("\(s)start", self.name)
             try compile(context)
             context.elementsStack.popLast()
-//            print("\(s)end", self.name)
         } catch JackError.failedToCompile(let lineNum, let message) {
             context.elementsStack.popLast()
-//            print("\(s)end", self.name)
             var newMessage = "\(message)\n"
             newMessage += "while compile \(name)"
             context.update(initialContext)
