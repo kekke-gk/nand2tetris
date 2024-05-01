@@ -1,0 +1,392 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		E77EA52A2BAEADEB00B91E98 /* ArgumentParser in Frameworks */ = {isa = PBXBuildFile; productRef = E77EA5292BAEADEB00B91E98 /* ArgumentParser */; };
+		E77EA5352BAEAFE800B91E98 /* CompilationEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = E77EA52C2BAEAFE800B91E98 /* CompilationEngine.swift */; };
+		E77EA5362BAEAFE800B91E98 /* JackTokenizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = E77EA52D2BAEAFE800B91E98 /* JackTokenizer.swift */; };
+		E77EA5372BAEAFE800B91E98 /* JackError.swift in Sources */ = {isa = PBXBuildFile; fileRef = E77EA52E2BAEAFE800B91E98 /* JackError.swift */; };
+		E77EA5382BAEAFE800B91E98 /* ProgramStructure.swift in Sources */ = {isa = PBXBuildFile; fileRef = E77EA52F2BAEAFE800B91E98 /* ProgramStructure.swift */; };
+		E77EA5392BAEAFE800B91E98 /* Statements.swift in Sources */ = {isa = PBXBuildFile; fileRef = E77EA5302BAEAFE800B91E98 /* Statements.swift */; };
+		E77EA53B2BAEAFE800B91E98 /* Element.swift in Sources */ = {isa = PBXBuildFile; fileRef = E77EA5322BAEAFE800B91E98 /* Element.swift */; };
+		E77EA53C2BAEAFE800B91E98 /* Token.swift in Sources */ = {isa = PBXBuildFile; fileRef = E77EA5332BAEAFE800B91E98 /* Token.swift */; };
+		E77EA53D2BAEAFE800B91E98 /* Expressions.swift in Sources */ = {isa = PBXBuildFile; fileRef = E77EA5342BAEAFE800B91E98 /* Expressions.swift */; };
+		E77EA5412BAECA5100B91E98 /* JackCompiler.swift in Sources */ = {isa = PBXBuildFile; fileRef = E77EA5402BAECA5100B91E98 /* JackCompiler.swift */; };
+		E77EA5432BAECB1300B91E98 /* SymbolTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = E77EA5422BAECB1300B91E98 /* SymbolTable.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		E77EA51C2BAEADCE00B91E98 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		E77EA51E2BAEADCE00B91E98 /* JackCompiler */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = JackCompiler; sourceTree = BUILT_PRODUCTS_DIR; };
+		E77EA52C2BAEAFE800B91E98 /* CompilationEngine.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CompilationEngine.swift; sourceTree = "<group>"; };
+		E77EA52D2BAEAFE800B91E98 /* JackTokenizer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JackTokenizer.swift; sourceTree = "<group>"; };
+		E77EA52E2BAEAFE800B91E98 /* JackError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JackError.swift; sourceTree = "<group>"; };
+		E77EA52F2BAEAFE800B91E98 /* ProgramStructure.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProgramStructure.swift; sourceTree = "<group>"; };
+		E77EA5302BAEAFE800B91E98 /* Statements.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Statements.swift; sourceTree = "<group>"; };
+		E77EA5322BAEAFE800B91E98 /* Element.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Element.swift; sourceTree = "<group>"; };
+		E77EA5332BAEAFE800B91E98 /* Token.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Token.swift; sourceTree = "<group>"; };
+		E77EA5342BAEAFE800B91E98 /* Expressions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Expressions.swift; sourceTree = "<group>"; };
+		E77EA5402BAECA5100B91E98 /* JackCompiler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JackCompiler.swift; sourceTree = "<group>"; };
+		E77EA5422BAECB1300B91E98 /* SymbolTable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SymbolTable.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		E77EA51B2BAEADCE00B91E98 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E77EA52A2BAEADEB00B91E98 /* ArgumentParser in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		E77EA5152BAEADCE00B91E98 = {
+			isa = PBXGroup;
+			children = (
+				E77EA5202BAEADCE00B91E98 /* JackCompiler */,
+				E77EA51F2BAEADCE00B91E98 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		E77EA51F2BAEADCE00B91E98 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				E77EA51E2BAEADCE00B91E98 /* JackCompiler */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		E77EA5202BAEADCE00B91E98 /* JackCompiler */ = {
+			isa = PBXGroup;
+			children = (
+				E77EA53F2BAEB15D00B91E98 /* Grammar */,
+				E77EA52C2BAEAFE800B91E98 /* CompilationEngine.swift */,
+				E77EA52E2BAEAFE800B91E98 /* JackError.swift */,
+				E77EA52D2BAEAFE800B91E98 /* JackTokenizer.swift */,
+				E77EA5402BAECA5100B91E98 /* JackCompiler.swift */,
+				E77EA5422BAECB1300B91E98 /* SymbolTable.swift */,
+			);
+			path = JackCompiler;
+			sourceTree = "<group>";
+		};
+		E77EA53F2BAEB15D00B91E98 /* Grammar */ = {
+			isa = PBXGroup;
+			children = (
+				E77EA5322BAEAFE800B91E98 /* Element.swift */,
+				E77EA5332BAEAFE800B91E98 /* Token.swift */,
+				E77EA5342BAEAFE800B91E98 /* Expressions.swift */,
+				E77EA5302BAEAFE800B91E98 /* Statements.swift */,
+				E77EA52F2BAEAFE800B91E98 /* ProgramStructure.swift */,
+			);
+			name = Grammar;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		E77EA51D2BAEADCE00B91E98 /* JackCompiler */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = E77EA5252BAEADCE00B91E98 /* Build configuration list for PBXNativeTarget "JackCompiler" */;
+			buildPhases = (
+				E77EA51A2BAEADCE00B91E98 /* Sources */,
+				E77EA51B2BAEADCE00B91E98 /* Frameworks */,
+				E77EA51C2BAEADCE00B91E98 /* CopyFiles */,
+				E77EA52B2BAEAE0900B91E98 /* ShellScript */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = JackCompiler;
+			packageProductDependencies = (
+				E77EA5292BAEADEB00B91E98 /* ArgumentParser */,
+			);
+			productName = JackCompiler;
+			productReference = E77EA51E2BAEADCE00B91E98 /* JackCompiler */;
+			productType = "com.apple.product-type.tool";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		E77EA5162BAEADCE00B91E98 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1530;
+				LastUpgradeCheck = 1530;
+				TargetAttributes = {
+					E77EA51D2BAEADCE00B91E98 = {
+						CreatedOnToolsVersion = 15.3;
+						LastSwiftMigration = 1530;
+					};
+				};
+			};
+			buildConfigurationList = E77EA5192BAEADCE00B91E98 /* Build configuration list for PBXProject "JackCompiler" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = E77EA5152BAEADCE00B91E98;
+			packageReferences = (
+				E77EA5282BAEADEB00B91E98 /* XCRemoteSwiftPackageReference "swift-argument-parser" */,
+			);
+			productRefGroup = E77EA51F2BAEADCE00B91E98 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				E77EA51D2BAEADCE00B91E98 /* JackCompiler */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		E77EA52B2BAEAE0900B91E98 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\ncp $BUILT_PRODUCTS_DIR/JackCompiler $SRCROOT/bin\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		E77EA51A2BAEADCE00B91E98 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E77EA5362BAEAFE800B91E98 /* JackTokenizer.swift in Sources */,
+				E77EA5412BAECA5100B91E98 /* JackCompiler.swift in Sources */,
+				E77EA5432BAECB1300B91E98 /* SymbolTable.swift in Sources */,
+				E77EA5372BAEAFE800B91E98 /* JackError.swift in Sources */,
+				E77EA5392BAEAFE800B91E98 /* Statements.swift in Sources */,
+				E77EA5382BAEAFE800B91E98 /* ProgramStructure.swift in Sources */,
+				E77EA53D2BAEAFE800B91E98 /* Expressions.swift in Sources */,
+				E77EA53B2BAEAFE800B91E98 /* Element.swift in Sources */,
+				E77EA5352BAEAFE800B91E98 /* CompilationEngine.swift in Sources */,
+				E77EA53C2BAEAFE800B91E98 /* Token.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		E77EA5232BAEADCE00B91E98 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.4;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		E77EA5242BAEADCE00B91E98 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.4;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+			};
+			name = Release;
+		};
+		E77EA5262BAEADCE00B91E98 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = G6MNY5K23G;
+				ENABLE_HARDENED_RUNTIME = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		E77EA5272BAEADCE00B91E98 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = G6MNY5K23G;
+				ENABLE_HARDENED_RUNTIME = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		E77EA5192BAEADCE00B91E98 /* Build configuration list for PBXProject "JackCompiler" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E77EA5232BAEADCE00B91E98 /* Debug */,
+				E77EA5242BAEADCE00B91E98 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		E77EA5252BAEADCE00B91E98 /* Build configuration list for PBXNativeTarget "JackCompiler" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E77EA5262BAEADCE00B91E98 /* Debug */,
+				E77EA5272BAEADCE00B91E98 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		E77EA5282BAEADEB00B91E98 /* XCRemoteSwiftPackageReference "swift-argument-parser" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/apple/swift-argument-parser.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.3.1;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		E77EA5292BAEADEB00B91E98 /* ArgumentParser */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E77EA5282BAEADEB00B91E98 /* XCRemoteSwiftPackageReference "swift-argument-parser" */;
+			productName = ArgumentParser;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = E77EA5162BAEADCE00B91E98 /* Project object */;
+}
