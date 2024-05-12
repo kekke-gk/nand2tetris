@@ -239,33 +239,11 @@ class Output {
     /** Displays the given integer starting at the cursor location,
      *  and advances the cursor appropriately. */
     function void printInt(int i) {
-        var int powerOfTen, q;
-        var boolean flag;
-        let powerOfTen = 10000; // Maximum in 16 bit is 65536. So start from 10000.
-        let flag = false;
-
-        if (i < 0) {
-            do Output.printChar(45); // print minus "-"
-            let i = Math.abs(i);
-        }
-
-        while (powerOfTen > 0) {
-            let q = i / powerOfTen;
-            let i = i - (q * powerOfTen); // i %= powerOfTen;
-
-            if (q = 0) {
-                // Don't print prefix 0. (Don't do zero padding.)
-                if (flag) {
-                    do Output.printChar(q + 48);
-                }
-            } else {
-                do Output.printChar(q + 48);
-                let flag = true;
-            }
-            
-            let powerOfTen = powerOfTen / 10;
-        }
-
+        var String str;
+        let str = String.new(6); // Max length is 6 with 1 sign and 5 digits
+        do str.setInt(i);
+        do Output.printString(str);
+        do str.dispose();
         return;
     }
 
