@@ -75,8 +75,8 @@ class Matrix {
             let x = 0;
             while (x < (w / 2)) {
                 let tmp = at(x, y);
-                do set(x, y, at(w - x, y));
-                do set(w - x, y, tmp);
+                do set(x, y, at(w - x - 1, y));
+                do set(w - x - 1, y, tmp);
                 let x = x + 1;
             }
             let y = y + 1;
