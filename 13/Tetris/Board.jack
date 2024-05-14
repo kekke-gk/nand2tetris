@@ -1,0 +1,132 @@
+class Board {
+    static int W, H, SIZE;
+
+    field Matrix board;
+    field Mino mino;
+
+    field int posX, posY;
+    
+    constructor Board new() {
+        let W = 10;
+        let H = 20;
+        let SIZE = 12;
+
+        let posX = 3;
+        let posY = 0;
+
+        let board = Matrix.new(W + 2, H + 1);
+        do createWall();
+        return this;
+    }
+
+    method void setMino(Mino mino_) {
+        let mino = mino_;
+
+        if (mino.type() = 0) {
+            let posX = 4;
+        } else {
+            let posX = 3;
+        }
+
+        return;
+    }
+
+    method void createWall() {
+        var int x, y;
+
+        let x = -1;
+        while (x < (W + 1)) {
+            do set(x, H, true);
+            let x = x + 1;
+        }
+
+        let y = 0;
+        while (y < (H + 1)) {
+            do set(-1, y, true);
+            do set(10, y, true);
+            let y = y + 1;
+        }
+        return;
+    }
+
+    method boolean at(int x, int y) {
+        return board.at(x + 1, y);
+    }
+
+    method void set(int x, int y, boolean b) {
+        do board.set(x + 1, y, b);
+        return;
+    }
+
+    method void update() {
+        var int x, y;
+
+        let x = 0;
+        while (x < mino.width()) {
+            let y = 0;
+            while (y < mino.height()) {
+                do set(x + posX, y + posY, mino.at(x, y));
+                let y = y + 1;
+            }
+            let x = x + 1;
+        }
+        return;
+    }
+
+    method void drawPixel(int x, int y) {
+        var int offsetX, offsetY;
+
+        let offsetX = (x + 1) * SIZE;
+        let offsetY = y * SIZE;
+
+        do Screen.setColor(at(x, y));
+        do Screen.drawRectangle(offsetX + 1, offsetY + 1, offsetX + SIZE - 1, offsetY + SIZE - 1);
+        return;
+    }
+
+    method void draw() {
+        var int x, y;
+
+        let x = -1;
+        while (x < (W + 1)) {
+            let y = 0;
+            while (y < (H + 1)) {
+                do drawPixel(x, y);
+                let y = y + 1;
+            }
+            let x = x + 1;
+        }
+        return;
+    }
+
+    method void dispose() {
+        do board.dispose();
+        do Memory.deAlloc(this);
+        return;
+    }
+
+/*
+      -1 0 1 2 3 4 5 6 7 8 910
+ 0    ■□□□□□□□□□□■
+ 1    ■□□□□□□□□□□■
+ 2    ■□□□□□□□□□□■
+ 3    ■□□□□□□□□□□■
+ 4    ■□□□□□□□□□□■
+ 5    ■□□□□□□□□□□■
+ 6    ■□□□□□□□□□□■
+ 7    ■□□□□□□□□□□■
+ 8    ■□□□□□□□□□□■
+ 9    ■□□□□□□□□□□■
+10    ■□□□□□□□□□□■
+11    ■□□□□□□□□□□■
+12    ■□□□□□□□□□□■
+13    ■□□□□□□□□□□■
+14    ■□□□□□□□□□□■
+15    ■□□□□□□□□□□■
+16    ■□□□□□□□□□□■
+17    ■□□□□□□□□□□■
+18    ■□□□□□□□□□□■
+19    ■□□□□□□□□□□■
+20    ■■■■■■■■■■■■
+*/
+}

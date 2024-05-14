@@ -1,0 +1,92 @@
+class Matrix {
+    field Array data;
+    field int w, h;
+
+    constructor Matrix new(int width, int height) {
+        let w = width;
+        let h = height;
+        let data = Array.new(w * h);
+        do clear();
+        return this;
+    }
+
+    method void clear() {
+        var int i;
+        let i = 0;
+        while (i < (w * h)) {
+            let data[i] = 0;
+            let i = i + 1;
+        }
+        return;
+    }
+
+    method int width() {
+        return w;
+    }
+
+    method int height() {
+        return h;
+    }
+
+    method int at(int x, int y) {
+        return data[(y * w) + x];
+    }
+
+    method void set(int x, int y, int value) {
+        let data[(y * w) + x] = value;
+        return;
+    }
+
+    method void rotateR() {
+        do transpose();
+        do horizontalFlip();
+        return;
+    }
+
+    method void rotateL() {
+        do horizontalFlip();
+        do transpose();
+        return;
+    }
+
+    method void transpose() {
+        var int x, y, tmp;
+        let x = 0;
+        while (x < (w - 1)) {
+            let y = x + 1;
+            while (y < h) {
+                if (~(x = y)) {
+                    let tmp = at(x, y);
+                    do set(x, y, at(y, x));
+                    do set(y, x, tmp);
+                }
+                let y = y + 1;
+            }
+
+            let x = x + 1;
+        }
+        return;
+    }
+
+    method void horizontalFlip() {
+        var int x, y, tmp;
+        let y = 0;
+        while (y < h) {
+            let x = 0;
+            while (x < (w / 2)) {
+                let tmp = at(x, y);
+                do set(x, y, at(w - x, y));
+                do set(w - x, y, tmp);
+                let x = x + 1;
+            }
+            let y = y + 1;
+        }
+        return;
+    }
+
+    method void dispose() {
+        do data.dispose();
+        do Memory.deAlloc(this);
+        return;
+    }
+}

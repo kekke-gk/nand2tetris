@@ -1,0 +1,70 @@
+class Tetris {
+    static Tetris instance;
+
+    field Board board;
+    field Mino mino;
+    field boolean exit;
+
+    constructor Tetris new() {
+	    do Screen.clearScreen();
+
+        let board = Board.new();
+        let mino = MinoGenerator.generate();
+	    let exit = false;
+
+        do board.setMino(mino);
+
+        return this;
+    }
+
+    method void dispose() {
+	    do board.dispose();
+        do Memory.deAlloc(this);
+        return;
+    }
+
+    function void newInstance() {
+        let instance = Tetris.new();
+        return;
+    }
+    
+    function Tetris getInstance() {
+        return instance;
+    }
+
+    method void draw() {
+        do board.draw();
+        return;
+    }
+
+    method void run() {
+        var char key;
+
+        while (~exit) {
+            while ((key = 0) & (~exit)) {
+                let key = Keyboard.keyPressed();
+                do board.update();
+                do board.draw();
+                do Sys.wait(500);
+            }
+
+            if (key = 140) { let exit = true; }
+            else { do mino.setMovement(key); }
+
+
+            while ((~(key = 0)) & (~exit)) {
+                let key = Keyboard.keyPressed();
+                do board.update();
+                do board.draw();
+                do Sys.wait(500);
+            }
+        }
+
+	    if (exit) {
+            do Output.moveCursor(10, 32);
+	        do Output.printString("Game Over");
+	    }
+            
+        return;
+    }
+}

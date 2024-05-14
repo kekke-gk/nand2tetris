@@ -1,0 +1,50 @@
+class MinoGenerator {
+    static int i;
+    static Array types;
+
+    function void init() {
+        let types = Array.new(7);
+        do MinoGenerator.reset();
+        return;
+    }
+
+    function Mino generate() {
+        var Mino mino;
+
+        let mino = Mino.new(types[i]);
+
+        let i = i + 1;
+        if (i = 7) {
+            do MinoGenerator.reset();
+        }
+        return mino;
+    }
+
+    function void reset() {
+        var int j, k, r;
+        var boolean notContain;
+
+        let j = 0;
+
+        while (j < 7) {
+            let r = Random.randInt(7);
+
+            let notContain = true;
+            let k = 0;
+            while (k < j) {
+                if (types[k] = r) {
+                    let notContain = false;
+                }
+                let k = k + 1;
+            }
+
+            if (notContain) {
+                let types[j] = r;
+                let j = j + 1;
+            }
+        }
+
+        let i = 0;
+        return;
+    }
+}
