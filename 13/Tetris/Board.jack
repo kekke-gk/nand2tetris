@@ -107,17 +107,62 @@ class Board {
     method void setMovement(int key) {
         if (key = 65) { // A
             do mino.rotateL();
+            if (detectCollision()) {
+                do mino.rotateR();
+            }
         }
         if (key = 68) { // D
             do mino.rotateR();
+            if (detectCollision()) {
+                do mino.rotateL();
+            }
         }
         if (key = 130) { // left arrow
             let posX = posX - 1;
+            if (detectCollision()) {
+                let posX = posX + 1;
+            }
         }
         if (key = 132) { // right arrow
             let posX = posX + 1;
+            if (detectCollision()) {
+                let posX = posX - 1;
+            }
+        }
+        if (key = 131) { // up arrow
+            do hardDrop();
+        }
+        if (key = 133) { // down arrow
+            let posY = posY + 1;
+            if (detectCollision()) {
+                let posY = posY - 1;
+            }
         }
         return;
+    }
+
+    method void hardDrop() {
+        while (~detectCollision()) {
+            let posY = posY + 1;
+        }
+        let posY = posY - 1;
+        return;
+    }
+
+    method boolean detectCollision() {
+        var int x, y;
+        let x = 0;
+        while (x < mino.width()) {
+            let y = 0;
+            while (y < mino.height()) {
+                if (at(x + posX, y + posY) & mino.at(x, y)) {
+                    return true;
+                }
+                let y = y + 1;
+            }
+            let x = x + 1;
+        }
+        return false;
     }
 
     method void dispose() {
