@@ -58,14 +58,25 @@ class Board {
         return;
     }
 
-    method void update() {
+    method void drawPixel(int x, int y, boolean color) {
+        var int offsetX, offsetY;
+
+        let offsetX = (x + 1) * SIZE;
+        let offsetY = y * SIZE;
+
+        do Screen.setColor(color);
+        do Screen.drawRectangle(offsetX + 1, offsetY + 1, offsetX + SIZE - 1, offsetY + SIZE - 1);
+        return;
+    }
+
+    method void drawBoard() {
         var int x, y;
 
-        let x = 0;
-        while (x < mino.width()) {
+        let x = -1;
+        while (x < (W + 1)) {
             let y = 0;
-            while (y < mino.height()) {
-                do set(x + posX, y + posY, mino.at(x, y));
+            while (y < (H + 1)) {
+                do drawPixel(x, y, at(x, y));
                 let y = y + 1;
             }
             let x = x + 1;
@@ -73,28 +84,38 @@ class Board {
         return;
     }
 
-    method void drawPixel(int x, int y) {
-        var int offsetX, offsetY;
-
-        let offsetX = (x + 1) * SIZE;
-        let offsetY = y * SIZE;
-
-        do Screen.setColor(at(x, y));
-        do Screen.drawRectangle(offsetX + 1, offsetY + 1, offsetX + SIZE - 1, offsetY + SIZE - 1);
+    method void drawMino() {
+        var int x, y;
+        let x = 0;
+        while (x < mino.width()) {
+            let y = 0;
+            while (y < mino.height()) {
+                do drawPixel(x + posX, y + posY, mino.at(x, y));
+                let y = y + 1;
+            }
+            let x = x + 1;
+        }
         return;
     }
 
     method void draw() {
-        var int x, y;
+        do drawBoard();
+        do drawMino();
+        return;
+    }
 
-        let x = -1;
-        while (x < (W + 1)) {
-            let y = 0;
-            while (y < (H + 1)) {
-                do drawPixel(x, y);
-                let y = y + 1;
-            }
-            let x = x + 1;
+    method void setMovement(int key) {
+        if (key = 65) { // A
+            do mino.rotateL();
+        }
+        if (key = 68) { // D
+            do mino.rotateR();
+        }
+        if (key = 130) { // left arrow
+            let posX = posX - 1;
+        }
+        if (key = 132) { // right arrow
+            let posX = posX + 1;
         }
         return;
     }

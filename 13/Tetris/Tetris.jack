@@ -43,20 +43,18 @@ class Tetris {
         while (~exit) {
             while ((key = 0) & (~exit)) {
                 let key = Keyboard.keyPressed();
-                do board.update();
                 do board.draw();
-                do Sys.wait(500);
+                do Sys.wait(50);
             }
 
             if (key = 140) { let exit = true; }
-            else { do mino.setMovement(key); }
+            else { do board.setMovement(key); }
 
 
             while ((~(key = 0)) & (~exit)) {
                 let key = Keyboard.keyPressed();
-                do board.update();
                 do board.draw();
-                do Sys.wait(500);
+                do Sys.wait(50);
             }
         }
 

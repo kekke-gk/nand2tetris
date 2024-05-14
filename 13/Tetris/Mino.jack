@@ -101,8 +101,13 @@ class Mino {
         return matrix.at(x, y);
     }
 
-    method void setMovement(int key) {
-        let type = type;
+    method void rotateR() {
+        do matrix.rotateR();
+        return;
+    }
+
+    method void rotateL() {
+        do matrix.rotateL();
         return;
     }
 }
