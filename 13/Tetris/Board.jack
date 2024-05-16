@@ -1,6 +1,7 @@
 class Board {
     static int W, H, SIZE;
     static int NEXTS_POS_X, NEXTS_POS_Y;
+    static int SCREEN_HEIGHT;
 
     field Matrix board;
     field Mino mino;
@@ -13,6 +14,7 @@ class Board {
         let SIZE = 12;
         let NEXTS_POS_X = 12;
         let NEXTS_POS_Y = 1;
+        let SCREEN_HEIGHT = 256;
 
         let board = Matrix.new(W + 2, H + 1);
         do createWall();
@@ -64,11 +66,19 @@ class Board {
         return;
     }
 
+    method int calcOffsetX(int x) {
+        return (x + 1) * SIZE;
+    }
+
+    method int calcOffsetY(int y) {
+        return y * SIZE;
+    }
+
     method void drawPixel(int x, int y, boolean color) {
         var int offsetX, offsetY;
 
-        let offsetX = (x + 1) * SIZE;
-        let offsetY = y * SIZE;
+        let offsetX = calcOffsetX(x);
+        let offsetY = calcOffsetY(y);
 
         do Screen.setColor(color);
         do Screen.drawRectangle(offsetX + 1, offsetY + 1, offsetX + SIZE - 1, offsetY + SIZE - 1);
@@ -115,14 +125,24 @@ class Board {
         return;
     }
 
+    method void eraseNextMinosArea() {
+        var int offsetX, offsetY;
+        let offsetX = calcOffsetX(NEXTS_POS_X);
+        do Screen.setColor(false);
+        do Screen.drawRectangle(offsetX, 0, offsetX + (SIZE * Mino.maxSize()), SCREEN_HEIGHT - 1);
+        return;
+    }
+
     method void drawNextMinos() {
         var int px, py, n;
+
+        do eraseNextMinosArea();
 
         let n = 0;
         while (n < 4) {
             let px = NEXTS_POS_X;
             let py = NEXTS_POS_Y + (n * Mino.maxSize());
-            do drawMino(MinoGenerator.getNextMino(n), px, py, false);
+            do drawMino(MinoGenerator.getNextMino(n), px, py, true);
             let n = n + 1;
         }
 
