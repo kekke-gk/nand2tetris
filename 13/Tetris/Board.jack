@@ -293,12 +293,12 @@ class Board {
             }
             if (isFullLine) {
                 do eraseLine(y);
+            } else {
+                let y = y - 1;
             }
             if (isEmptyLine) {
                 return;
             }
-
-            let y = y - 1;
         }
         return;
     }
