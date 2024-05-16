@@ -89,7 +89,9 @@ class Board {
         while (x < mino.width()) {
             let y = 0;
             while (y < mino.height()) {
-                do drawPixel(x + posX, y + posY, mino.at(x, y));
+                if (mino.at(x, y)) {
+                    do drawPixel(x + posX, y + posY, true);
+                }
                 let y = y + 1;
             }
             let x = x + 1;
