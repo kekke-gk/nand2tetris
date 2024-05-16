@@ -1,18 +1,19 @@
 class Tetris {
     static Tetris instance;
+    static int DROP_COUNT;
+    field int dropCount;
 
     field Board board;
-    field Mino mino;
     field boolean exit;
 
     constructor Tetris new() {
+        let DROP_COUNT = 10;
+        let dropCount = 0;
+        
 	    do Screen.clearScreen();
 
         let board = Board.new();
-        let mino = MinoGenerator.generate();
 	    let exit = false;
-
-        do board.setMino(mino);
 
         return this;
     }
@@ -43,6 +44,11 @@ class Tetris {
         while (~exit) {
             while ((key = 0) & (~exit)) {
                 let key = Keyboard.keyPressed();
+                let dropCount = dropCount + 1;
+                if (dropCount > DROP_COUNT) {
+                    do board.drop();
+                    let dropCount = 0;
+                }
                 do board.draw();
                 do Sys.wait(50);
             }
@@ -53,6 +59,11 @@ class Tetris {
 
             while ((~(key = 0)) & (~exit)) {
                 let key = Keyboard.keyPressed();
+                let dropCount = dropCount + 1;
+                if (dropCount > DROP_COUNT) {
+                    do board.drop();
+                    let dropCount = 0;
+                }
                 do board.draw();
                 do Sys.wait(50);
             }

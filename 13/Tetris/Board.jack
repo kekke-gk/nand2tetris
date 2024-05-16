@@ -11,16 +11,14 @@ class Board {
         let H = 20;
         let SIZE = 12;
 
-        let posX = 3;
-        let posY = 0;
-
         let board = Matrix.new(W + 2, H + 1);
         do createWall();
+        do spawnMino();
         return this;
     }
 
-    method void setMino(Mino mino_) {
-        let mino = mino_;
+    method void spawnMino() {
+        let mino = MinoGenerator.generate();
 
         if (mino.type() = 0) {
             let posX = 4;
@@ -28,6 +26,7 @@ class Board {
             let posX = 3;
         }
 
+        let posY = 0;
         return;
     }
 
@@ -138,6 +137,34 @@ class Board {
                 let posY = posY - 1;
             }
         }
+        return;
+    }
+
+    method void drop() {
+        let posY = posY + 1;
+        if (detectCollision()) {
+            do place();
+            do spawnMino();
+        }
+        return;
+    }
+
+    method void place() {
+        var int x, y;
+        let posY = posY - 1;
+
+        let x = 0;
+        while (x < mino.width()) {
+            let y = 0;
+            while (y < mino.height()) {
+                if (mino.at(x, y)) {
+                    do set(x + posX, y + posY, true);
+                }
+                let y = y + 1;
+            }
+            let x = x + 1;
+        }
+
         return;
     }
 
