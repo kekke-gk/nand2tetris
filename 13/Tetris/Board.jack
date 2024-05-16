@@ -119,7 +119,7 @@ class Board {
         var int px, py, n;
 
         let n = 0;
-        while (n < 2) {
+        while (n < 4) {
             let px = NEXTS_POS_X;
             let py = NEXTS_POS_Y + (n * Mino.maxSize());
             do drawMino(MinoGenerator.getNextMino(n), px, py, false);
