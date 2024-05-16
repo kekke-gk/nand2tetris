@@ -1,11 +1,40 @@
 class MinoGenerator {
     static int i;
     static Array types;
+    static Mino mino;
+    static Mino nextMino0;
+    static Mino nextMino1;
+    static Mino nextMino2;
+    static Mino nextMino3;
 
     function void init() {
         let types = Array.new(7);
         do MinoGenerator.reset();
+
+        let mino = MinoGenerator.generate();
+        let nextMino0 = MinoGenerator.generate();
+        let nextMino1 = MinoGenerator.generate();
+        let nextMino2 = MinoGenerator.generate();
+        let nextMino3 = MinoGenerator.generate();
+
         return;
+    }
+
+    function Mino getMino() {
+        return mino;
+    }
+
+    function Mino getNextMino(int n) {
+        if (n = 0) {
+            return nextMino0;
+        }
+        if (n = 1) {
+            return nextMino1;
+        }
+        if (n = 2) {
+            return nextMino2;
+        }
+        return nextMino3;
     }
 
     function Mino generate() {
@@ -17,6 +46,15 @@ class MinoGenerator {
         if (i = 7) {
             do MinoGenerator.reset();
         }
+        return mino;
+    }
+
+    function Mino regenerate() {
+        let mino = nextMino0;
+        let nextMino0 = nextMino1;
+        let nextMino1 = nextMino2;
+        let nextMino2 = nextMino3;
+        let nextMino3 = MinoGenerator.generate();
         return mino;
     }
 

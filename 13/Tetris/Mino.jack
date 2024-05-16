@@ -110,4 +110,8 @@ class Mino {
         do matrix.rotateL();
         return;
     }
+
+    function int maxSize() {
+        return 4;
+    }
 }

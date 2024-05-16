@@ -1,5 +1,6 @@
 class Board {
     static int W, H, SIZE;
+    static int NEXTS_POS_X, NEXTS_POS_Y;
 
     field Matrix board;
     field Mino mino;
@@ -10,6 +11,8 @@ class Board {
         let W = 10;
         let H = 20;
         let SIZE = 12;
+        let NEXTS_POS_X = 12;
+        let NEXTS_POS_Y = 1;
 
         let board = Matrix.new(W + 2, H + 1);
         do createWall();
@@ -18,7 +21,11 @@ class Board {
     }
 
     method void spawnMino() {
-        let mino = MinoGenerator.generate();
+        let mino = MinoGenerator.getMino();
+
+        do drawNextMinos();
+
+        do MinoGenerator.regenerate();
 
         if (mino.type() = 0) {
             let posX = 4;
@@ -83,14 +90,18 @@ class Board {
         return;
     }
 
-    method void drawMino() {
+    method void drawMino(Mino m, int px, int py, boolean drawOnlyBlack) {
         var int x, y;
         let x = 0;
-        while (x < mino.width()) {
+        while (x < m.width()) {
             let y = 0;
-            while (y < mino.height()) {
-                if (mino.at(x, y)) {
-                    do drawPixel(x + posX, y + posY, true);
+            while (y < m.height()) {
+                if (drawOnlyBlack) {
+                    if (m.at(x, y)) {
+                        do drawPixel(x + px, y + py, true);
+                    }
+                } else {
+                    do drawPixel(x + px, y + py, m.at(x, y));
                 }
                 let y = y + 1;
             }
@@ -99,9 +110,28 @@ class Board {
         return;
     }
 
+    method void drawCurrentMino() {
+        do drawMino(mino, posX, posY, true);
+        return;
+    }
+
+    method void drawNextMinos() {
+        var int px, py, n;
+
+        let n = 0;
+        while (n < 2) {
+            let px = NEXTS_POS_X;
+            let py = NEXTS_POS_Y + (n * Mino.maxSize());
+            do drawMino(MinoGenerator.getNextMino(n), px, py, false);
+            let n = n + 1;
+        }
+
+        return;
+    }
+
     method void draw() {
         do drawBoard();
-        do drawMino();
+        do drawCurrentMino();
         return;
     }
 
@@ -261,27 +291,27 @@ class Board {
     }
 
 /*
-      -1 0 1 2 3 4 5 6 7 8 910
- 0    ■□□□□□□□□□□■
- 1    ■□□□□□□□□□□■
- 2    ■□□□□□□□□□□■
- 3    ■□□□□□□□□□□■
- 4    ■□□□□□□□□□□■
- 5    ■□□□□□□□□□□■
- 6    ■□□□□□□□□□□■
- 7    ■□□□□□□□□□□■
- 8    ■□□□□□□□□□□■
- 9    ■□□□□□□□□□□■
-10    ■□□□□□□□□□□■
-11    ■□□□□□□□□□□■
-12    ■□□□□□□□□□□■
-13    ■□□□□□□□□□□■
-14    ■□□□□□□□□□□■
-15    ■□□□□□□□□□□■
-16    ■□□□□□□□□□□■
-17    ■□□□□□□□□□□■
-18    ■□□□□□□□□□□■
-19    ■□□□□□□□□□□■
-20    ■■■■■■■■■■■■
+      -7-6-5-4-3-2-1 0 1 2 3 4 5 6 7 8 9101112131415
+ 0    □□□□□□■□□□□□□□□□□■□□□□□
+ 1    □■■■■□■□□□□□□□□□□■□■■■■
+ 2    □■Hold■□■□□□□□□□□□□■□■Next■
+ 3    □■    ■□■□□□□□□□□□□■□■ 00 ■
+ 4    □■■■■□■□□□□□□□□□□■□■■■■
+ 5    □□□□□□■□□□□□□□□□□■□■■■■
+ 6    □□□□□□■□□□□□□□□□□■□■Next■
+ 7    □□□□□□■□□□□□□□□□□■□■ 01 ■
+ 8    □□□□□□■□□□□□□□□□□■□■■■■
+ 9    □□□□□□■□□□□□□□□□□■□■■■■
+10    □□□□□□■□□□□□□□□□□■□■Next■
+11    □□□□□□■□□□□□□□□□□■□■ 02 ■
+12    □□□□□□■□□□□□□□□□□■□■■■■
+13    □□□□□□■□□□□□□□□□□■□■■■■
+14    □□□□□□■□□□□□□□□□□■□■Next■
+15    □□□□□□■□□□□□□□□□□■□■ 03 ■
+16    □□□□□□■□□□□□□□□□□■□■■■■
+17    □□□□□□■□□□□□□□□□□■□□□□□
+18    □□□□□□■□□□□□□□□□□■□□□□□
+19    □□□□□□■□□□□□□□□□□■□□□□□
+20    □□□□□□■■■■■■■■■■■■□□□□□
 */
 }
