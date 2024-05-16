@@ -1,10 +1,13 @@
 class Board {
     static int W, H, SIZE;
     static int NEXTS_POS_X, NEXTS_POS_Y;
+    static int HOLD_POS_X, HOLD_POS_Y;
     static int SCREEN_HEIGHT;
 
     field Matrix board;
     field Mino mino;
+    field Mino holdMino;
+    field boolean canHold;
 
     field int posX, posY;
     
@@ -14,9 +17,13 @@ class Board {
         let SIZE = 12;
         let NEXTS_POS_X = 12;
         let NEXTS_POS_Y = 1;
+        let HOLD_POS_X = -6;
+        let HOLD_POS_Y = 1;
         let SCREEN_HEIGHT = 256;
 
         let board = Matrix.new(W + 2, H + 1);
+        let holdMino = null;
+        let canHold = true;
         do createWall();
         do spawnMino();
         return this;
@@ -29,6 +36,11 @@ class Board {
 
         do MinoGenerator.regenerate();
 
+        do resetPosition();
+        return;
+    }
+
+    method void resetPosition() {
         if (mino.type() = 0) {
             let posX = 4;
         } else {
@@ -67,7 +79,7 @@ class Board {
     }
 
     method int calcOffsetX(int x) {
-        return (x + 1) * SIZE;
+        return (x + 7) * SIZE;
     }
 
     method int calcOffsetY(int y) {
@@ -149,6 +161,20 @@ class Board {
         return;
     }
 
+    method void eraseHoldMinosArea() {
+        var int offsetX, offsetY;
+        let offsetX = calcOffsetX(HOLD_POS_X);
+        do Screen.setColor(false);
+        do Screen.drawRectangle(offsetX, 0, offsetX + (SIZE * Mino.maxSize()), SCREEN_HEIGHT - 1);
+        return;
+    }
+
+    method void drawHoldMino() {
+        do eraseHoldMinosArea();
+        do drawMino(holdMino, HOLD_POS_X, HOLD_POS_Y, true);
+        return;
+    }
+
     method void draw() {
         do drawBoard();
         do drawCurrentMino();
@@ -167,6 +193,9 @@ class Board {
             if (detectCollision()) {
                 do mino.rotateL();
             }
+        }
+        if (key = 83) { // S
+            do hold();
         }
         if (key = 130) { // left arrow
             let posX = posX - 1;
@@ -202,6 +231,27 @@ class Board {
         return;
     }
 
+    method void hold() {
+        var Mino tmp;
+        if (~canHold) {
+            return;
+        }
+
+        let canHold = false;
+        if (holdMino = null) {
+            let holdMino = mino;
+            do spawnMino();
+        } else {
+            let tmp = mino;
+            let mino = holdMino;
+            let holdMino = tmp;
+            do resetPosition();
+        }
+
+        do drawHoldMino();
+        return;
+    }
+
     method void place() {
         var int x, y;
         let posY = posY - 1;
@@ -217,6 +267,8 @@ class Board {
             }
             let x = x + 1;
         }
+
+        let canHold = true;
 
         return;
     }
