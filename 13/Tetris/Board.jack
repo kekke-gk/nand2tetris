@@ -5,6 +5,7 @@ class Board {
     static int SCREEN_HEIGHT;
 
     field Matrix board;
+    field Matrix view;
     field Mino mino;
     field Mino holdMino;
     field boolean canHold;
@@ -22,6 +23,7 @@ class Board {
         let SCREEN_HEIGHT = 256;
 
         let board = Matrix.new(W + 2, H + 1);
+        let view = null;
         let holdMino = null;
         let canHold = true;
         do createWall();
@@ -117,13 +119,26 @@ class Board {
     }
 
     method void drawBoard() {
-        var int x, y;
+        if (~(view = null)) {
+            do view.dispose();
+        }
+        let view = board.copy();
+        return;
+    }
 
+    method void drawView() {
+        var int x, y;
+        var int v;
         let x = -1;
         while (x < (W + 1)) {
             let y = 0;
             while (y < (H + 1)) {
-                do drawPixel(x, y, at(x, y));
+                let v = view.at(x + 1, y);
+                if (v = 2) {
+                    do drawPixel(x, y, v, true);
+                } else {
+                    do drawPixel(x, y, v, false);
+                }
                 let y = y + 1;
             }
             let x = x + 1;
@@ -132,7 +147,7 @@ class Board {
     }
 
     // if ghost is true, drawOnlyBlack is ignored 
-    method void drawMino(Mino m, int px, int py, boolean drawOnlyBlack, boolean ghost) {
+    method void drawMino(Mino m, int px, int py, boolean drawOnlyBlack, boolean ghost, boolean drawToView) {
         var int x, y;
         let x = 0;
         while (x < m.width()) {
@@ -140,10 +155,26 @@ class Board {
             while (y < m.height()) {
                 if (drawOnlyBlack) {
                     if (m.at(x, y)) {
-                        do drawPixel(x + px, y + py, true, ghost);
+                        if (drawToView) {
+                            if (ghost) {
+                                do view.set(x + px + 1, y + py, 2);
+                            } else {
+                                do view.set(x + px + 1, y + py, true);
+                            }
+                        } else {
+                            do drawPixel(x + px, y + py, true, ghost);
+                        }
                     }
                 } else {
-                    do drawPixel(x + px, y + py, m.at(x, y), ghost);
+                    if (drawToView) {
+                        if (ghost) {
+                            do view.set(x + px + 1, y + py, 2);
+                        } else {
+                            do view.set(x + px + 1, y + py, m.at(x, y));
+                        }
+                    } else {
+                        do drawPixel(x + px, y + py, m.at(x, y), ghost);
+                    }
                 }
                 let y = y + 1;
             }
@@ -153,7 +184,7 @@ class Board {
     }
 
     method void drawCurrentMino() {
-        do drawMino(mino, posX, posY, true, false);
+        do drawMino(mino, posX, posY, true, false, true);
         return;
     }
 
@@ -174,7 +205,7 @@ class Board {
         while (n < 4) {
             let px = NEXTS_POS_X;
             let py = NEXTS_POS_Y + (n * Mino.maxSize());
-            do drawMino(MinoGenerator.getNextMino(n), px, py, true, false);
+            do drawMino(MinoGenerator.getNextMino(n), px, py, true, false, false);
             let n = n + 1;
         }
 
@@ -191,7 +222,7 @@ class Board {
 
     method void drawHoldMino() {
         do eraseHoldMinosArea();
-        do drawMino(holdMino, HOLD_POS_X, HOLD_POS_Y, true, false);
+        do drawMino(holdMino, HOLD_POS_X, HOLD_POS_Y, true, false, false);
         return;
     }
 
@@ -201,7 +232,7 @@ class Board {
         do hardDrop();
         let ghostPosY = posY;
         let posY = prevPosY;
-        do drawMino(mino, posX, ghostPosY, true, true);
+        do drawMino(mino, posX, ghostPosY, true, true, true);
         return;
     }
 

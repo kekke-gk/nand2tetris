@@ -84,6 +84,22 @@ class Matrix {
         return;
     }
 
+    method Matrix copy() {
+        var Matrix m;
+        var int x, y;
+        let m = Matrix.new(w, h);
+        let x = 0;
+        while (x < w) {
+            let y = 0;
+            while (y < h) {
+                do m.set(x, y, at(x, y));
+                let y = y + 1;
+            }
+            let x = x + 1;
+        }
+        return m;
+    }
+
     method void dispose() {
         do data.dispose();
         do Memory.deAlloc(this);
