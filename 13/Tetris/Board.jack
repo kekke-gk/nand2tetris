@@ -238,8 +238,9 @@ class Board {
 
     method void draw() {
         do drawBoard();
-        do drawCurrentMino();
         do drawGhost();
+        do drawCurrentMino();
+        do drawView();
         return;
     }
 
