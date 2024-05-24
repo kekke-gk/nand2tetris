@@ -4,6 +4,7 @@ class Board {
     static int HOLD_POS_X, HOLD_POS_Y;
     static int SCREEN_HEIGHT;
 
+    field Tetris tetris;
     field Matrix board;
     field Matrix view;
     field Mino mino;
@@ -22,6 +23,7 @@ class Board {
         let HOLD_POS_Y = 1;
         let SCREEN_HEIGHT = 256;
 
+        let tetris = Tetris.getInstance();
         let board = Matrix.new(W + 2, H + 1);
         let view = null;
         let holdMino = null;
@@ -39,6 +41,11 @@ class Board {
         do MinoGenerator.regenerate();
 
         do resetPosition();
+
+        if (detectCollision()) {
+            do tetris.gameOver();
+        }
+
         return;
     }
 

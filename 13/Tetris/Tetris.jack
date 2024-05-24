@@ -4,7 +4,6 @@ class Tetris {
     field int dropCount;
 
     field Board board;
-    field boolean exit;
 
     constructor Tetris new() {
         let DROP_COUNT = 10;
@@ -13,7 +12,6 @@ class Tetris {
 	    do Screen.clearScreen();
 
         let board = Board.new();
-	    let exit = false;
 
         return this;
     }
@@ -41,8 +39,8 @@ class Tetris {
     method void run() {
         var char key;
 
-        while (~exit) {
-            while ((key = 0) & (~exit)) {
+        while (true) {
+            while (key = 0) {
                 let key = Keyboard.keyPressed();
                 let dropCount = dropCount + 1;
                 if (dropCount > DROP_COUNT) {
@@ -53,11 +51,11 @@ class Tetris {
                 do Sys.wait(50);
             }
 
-            if (key = 140) { let exit = true; }
+            if (key = 140) { do gameOver(); }
             else { do board.setMovement(key); }
 
 
-            while ((~(key = 0)) & (~exit)) {
+            while (~(key = 0)) {
                 let key = Keyboard.keyPressed();
                 let dropCount = dropCount + 1;
                 if (dropCount > DROP_COUNT) {
@@ -69,11 +67,13 @@ class Tetris {
             }
         }
 
-	    if (exit) {
-            do Output.moveCursor(10, 32);
-	        do Output.printString("Game Over");
-	    }
-            
+        return;
+    }
+
+    method void gameOver() {
+        do Output.moveCursor(11, 42);
+        do Output.printString("Game Over");
+        do Sys.halt();
         return;
     }
 }
