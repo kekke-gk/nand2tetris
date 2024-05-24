@@ -1,22 +1,26 @@
 class Tetris {
     static Tetris instance;
     static int DROP_COUNT;
+    static int DAS, ARR;
     field int dropCount;
+    field int dasCount, arrCount;
 
     field Board board;
 
-    field char key;
 
     constructor Tetris new() {
-        let DROP_COUNT = 10;
+        let DROP_COUNT = 15;
         let dropCount = 0;
-        
+
+        let DAS = 5;
+        let ARR = 1;
+        let dasCount = 0;
+        let arrCount = 0;
+
 	    do Screen.clearScreen();
 
         do Board.newInstance();
         let board = Board.getInstance();
-
-        let key = 0;
 
         return this;
     }
@@ -42,26 +46,44 @@ class Tetris {
     }
 
     method void run() {
+        var char key, prevKey;
+
         while (true) {
-            while (key = 0) { do run_(); }
+            let prevKey = key;
+            let key = Keyboard.keyPressed();
 
-            if (key = 140) { do gameOver(); }
-            else { do board.setMovement(key); }
+            let dropCount = dropCount + 1;
+            if (dropCount > DROP_COUNT) {
+                do board.drop();
+                let dropCount = 0;
+            }
 
-            while (~(key = 0)) { do run_(); }
+            do board.draw();
+
+            if (prevKey = key) {
+                let dasCount = dasCount + 1;
+                if (dasCount = DAS) {
+                    do keyEvent(key);
+                }
+                if (dasCount > DAS) {
+                    let arrCount = arrCount + 1;
+                    if (arrCount = ARR) {
+                        do keyEvent(key);
+                        let arrCount = 0;
+                    }
+                }
+            } else {
+                do keyEvent(key);
+                let dasCount = 0;
+                let arrCount = 0;
+            }
         }
         return;
     }
 
-    method void run_() {
-        let key = Keyboard.keyPressed();
-        let dropCount = dropCount + 1;
-        if (dropCount > DROP_COUNT) {
-            do board.drop();
-            let dropCount = 0;
-        }
-        do board.draw();
-        do Sys.wait(50);
+    method void keyEvent(int key) {
+        if (key = 140) { do gameOver(); }
+        else { do board.setMovement(key); }
         return;
     }
 
