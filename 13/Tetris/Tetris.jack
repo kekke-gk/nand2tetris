@@ -5,13 +5,18 @@ class Tetris {
 
     field Board board;
 
+    field char key;
+
     constructor Tetris new() {
         let DROP_COUNT = 10;
         let dropCount = 0;
         
 	    do Screen.clearScreen();
 
-        let board = Board.new();
+        do Board.newInstance();
+        let board = Board.getInstance();
+
+        let key = 0;
 
         return this;
     }
@@ -37,36 +42,26 @@ class Tetris {
     }
 
     method void run() {
-        var char key;
-
         while (true) {
-            while (key = 0) {
-                let key = Keyboard.keyPressed();
-                let dropCount = dropCount + 1;
-                if (dropCount > DROP_COUNT) {
-                    do board.drop();
-                    let dropCount = 0;
-                }
-                do board.draw();
-                do Sys.wait(50);
-            }
+            while (key = 0) { do run_(); }
 
             if (key = 140) { do gameOver(); }
             else { do board.setMovement(key); }
 
-
-            while (~(key = 0)) {
-                let key = Keyboard.keyPressed();
-                let dropCount = dropCount + 1;
-                if (dropCount > DROP_COUNT) {
-                    do board.drop();
-                    let dropCount = 0;
-                }
-                do board.draw();
-                do Sys.wait(50);
-            }
+            while (~(key = 0)) { do run_(); }
         }
+        return;
+    }
 
+    method void run_() {
+        let key = Keyboard.keyPressed();
+        let dropCount = dropCount + 1;
+        if (dropCount > DROP_COUNT) {
+            do board.drop();
+            let dropCount = 0;
+        }
+        do board.draw();
+        do Sys.wait(50);
         return;
     }
 

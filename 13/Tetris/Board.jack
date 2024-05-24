@@ -1,4 +1,5 @@
 class Board {
+    static Board instance;
     static int W, H, SIZE;
     static int NEXTS_POS_X, NEXTS_POS_Y;
     static int HOLD_POS_X, HOLD_POS_Y;
@@ -31,6 +32,43 @@ class Board {
         do createWall();
         do spawnMino();
         return this;
+    }
+
+    function void newInstance() {
+        let instance = Board.new();
+        return;
+    }
+    
+    function Board getInstance() {
+        return instance;
+    }
+
+    method int posX() {
+        return posX;
+    }
+
+    method int posY() {
+        return posY;
+    }
+
+    method void setPosX(int x) {
+        let posX = x;
+        return;
+    }
+
+    method void setPosY(int y) {
+        let posY = y;
+        return;
+    }
+
+    method void addPosX(int x) {
+        let posX = posX + x;
+        return;
+    }
+
+    method void addPosY(int y) {
+        let posY = posY + y;
+        return;
     }
 
     method void spawnMino() {
@@ -253,10 +291,10 @@ class Board {
 
     method void setMovement(int key) {
         if (key = 65) { // A
-            do rotate(false);
+            do mino.rotate(false);
         }
         if (key = 68) { // D
-            do rotate(true);
+            do mino.rotate(true);
         }
         if (key = 83) { // S
             do hold();
@@ -282,231 +320,6 @@ class Board {
                 let posY = posY - 1;
             }
         }
-        return;
-    }
-
-    // Rotate according to SRS(Super Rotation System)
-    method void rotate(boolean toR) {
-        var int dirAtStart, dirAt0;
-        var int sign;
-        var int initPosX, initPosY;
-
-        // "O" mino is not changed with rotation
-        if (mino.type() = 0) { 
-            return;
-        }
-
-        // "I" mino has different rotation behavior
-        if (mino.type() = 1) {
-            do rotateImino(toR);
-            return;
-        }
-
-        let dirAtStart = mino.direction();
-
-        if (toR) {
-            do mino.rotateR();
-        } else {
-            do mino.rotateL();
-        }
-        if (~detectCollision()) { return; }
-
-        let dirAt0 = mino.direction();
-
-        let initPosX = posX;
-        let initPosY = posY;
-
-        if (dirAtStart = 1 | dirAtStart = 3) {
-            if (dirAtStart = 1) {
-                let sign = 1;
-            } else {
-                let sign = -1;
-            }
-
-            // 1
-            let posX = posX + sign;
-            if (~detectCollision()) { return; }
-
-            // 2
-            let posY = posY + 1;
-            if (~detectCollision()) { return; }
-
-            // 3
-            let posX = initPosX;
-            let posY = initPosY - 2;
-            if (~detectCollision()) { return; }
-
-            // 4
-            let posX = posX + sign;
-            if (~detectCollision()) { return; }
-
-            // failed to rotate, start restoring
-            let posX = initPosX;
-            let posY = initPosY;
-            if (toR) {
-                do mino.rotateL();
-            } else {
-                do mino.rotateR();
-            }
-
-            return;
-        }
-
-        if (dirAt0 = 3) {
-            let sign = 1;
-        } else {
-            let sign = -1;
-        }
-        // 1
-        let posX = posX + sign;
-        if (~detectCollision()) { return; }
-
-        // 2
-        let posY = posY - 1;
-        if (~detectCollision()) { return; }
-
-        // 3
-        let posX = initPosX;
-        let posY = initPosY + 2;
-        if (~detectCollision()) { return; }
-
-        // 4
-        let posX = posX + sign;
-        if (~detectCollision()) { return; }
-
-        // failed to rotate, start restoring
-        let posX = initPosX;
-        let posY = initPosY;
-        if (toR) {
-            do mino.rotateL();
-        } else {
-            do mino.rotateR();
-        }
-
-        return;
-    }
-
-    method void rotateImino(boolean toR) {
-        var int dirAtStart, dirAt0;
-        var int sign;
-        var int initPosX, initPosY;
-
-        let dirAtStart = mino.direction();
-
-        if (toR) {
-            do mino.rotateR();
-        } else {
-            do mino.rotateL();
-        }
-        if (~detectCollision()) { return; }
-
-        let dirAt0 = mino.direction();
-
-        let initPosX = posX;
-        let initPosY = posY;
-
-        if (dirAt0 = 0 | dirAt0 = 2) {
-            if (toR) {
-                let sign = 1;
-            } else {
-                let sign = -1;
-            }
-
-            // 1
-            if (dirAt0 = 0) {
-                let posX = posX - (2 * sign);
-            } else {
-                let posX = posX - sign;
-            }
-            if (~detectCollision()) { return; }
-
-            // 2
-            let posX = posX + (3 * sign);
-            if (~detectCollision()) { return; }
-
-            // 3
-            if (dirAtStart = 1) {
-                let posX = posX - (3 * sign);
-                if (toR) {
-                    let posY = posY - 2;
-                } else {
-                    let posY = posY - 1;
-                }
-            } else {
-                if (toR) {
-                    let posY = posY + 2;
-                } else {
-                    let posY = posY + 1;
-                }
-            }
-            if (~detectCollision()) { return; }
-
-            // 4
-            if (dirAtStart = 1) {
-                let posX = posX + (3 * sign);
-                let posY = posY + 3;
-            } else {
-                let posX = posX - (3 * sign);
-                let posY = posY - 3;
-            }
-            if (~detectCollision()) { return; }
-
-            // failed to rotate, start restoring
-            let posX = initPosX;
-            let posY = initPosY;
-            if (toR) {
-                do mino.rotateL();
-            } else {
-                do mino.rotateR();
-            }
-
-            return;
-        }
-
-        if (dirAtStart = 2) {
-            let sign = 1;
-        } else {
-            let sign = -1;
-        }
-        // 1
-        if (toR) {
-            let posX = posX + (sign * 2);
-        } else {
-            let posX = posX + sign;
-        }
-        if (~detectCollision()) { return; }
-
-        // 2
-        let posX = posX - (sign * 3);
-        if (~detectCollision()) { return; }
-
-        // 3
-        let posX = posX + (sign * 3);
-        if (toR) {
-            let posY = posY - sign;
-        } else {
-            let posY = posY + (sign * 2);
-        }
-        if (~detectCollision()) { return; }
-
-        // 4
-        let posX = posX - (sign * 3);
-        if (toR) {
-            let posY = posY + (sign * 2);
-        } else {
-            let posY = posY - sign;
-        }
-        if (~detectCollision()) { return; }
-
-        // failed to rotate, start restoring
-        let posX = initPosX;
-        let posY = initPosY;
-        if (toR) {
-            do mino.rotateL();
-        } else {
-            do mino.rotateR();
-        }
-
         return;
     }
 

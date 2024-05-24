@@ -1,6 +1,7 @@
 class Mino {
     field int type, direction;
     field Matrix matrix;
+    field Board board;
 
     constructor Mino new(int type_) {
         let type = type_;
@@ -86,6 +87,10 @@ class Mino {
         return this;
     }
 
+    function int maxSize() {
+        return 4;
+    }
+
     method int type() {
         return type;
     }
@@ -124,7 +129,230 @@ class Mino {
         return;
     }
 
-    function int maxSize() {
-        return 4;
+    // Rotate according to SRS(Super Rotation System)
+    method void rotate(boolean toR) {
+        var int dirAtStart, dirAt0;
+        var int sign;
+        var int initPosX, initPosY;
+
+        let board = Board.getInstance();
+
+        // "O" mino is not changed with rotation
+        if (type = 0) { 
+            return;
+        }
+
+        // "I" mino has different rotation behavior
+        if (type = 1) {
+            do rotateImino(toR);
+            return;
+        }
+
+        let dirAtStart = direction;
+
+        if (toR) {
+            do rotateR();
+        } else {
+            do rotateL();
+        }
+        if (~board.detectCollision()) { return; }
+
+        let dirAt0 = direction;
+
+        let initPosX = board.posX();
+        let initPosY = board.posY();
+
+        if (dirAtStart = 1 | dirAtStart = 3) {
+            if (dirAtStart = 1) {
+                let sign = 1;
+            } else {
+                let sign = -1;
+            }
+
+            // 1
+            do board.addPosX(sign);
+            if (~board.detectCollision()) { return; }
+
+            // 2
+            do board.addPosY(1);
+            if (~board.detectCollision()) { return; }
+
+            // 3
+            do board.setPosX(initPosX);
+            do board.setPosY(initPosY - 2);
+            if (~board.detectCollision()) { return; }
+
+            // 4
+            do board.addPosX(sign);
+            if (~board.detectCollision()) { return; }
+
+            // failed to rotate, start restoring
+            do board.setPosX(initPosX);
+            do board.setPosY(initPosY);
+            if (toR) {
+                do rotateL();
+            } else {
+                do rotateR();
+            }
+
+            return;
+        }
+
+        if (dirAt0 = 3) {
+            let sign = 1;
+        } else {
+            let sign = -1;
+        }
+        // 1
+        do board.addPosX(sign);
+        if (~board.detectCollision()) { return; }
+
+        // 2
+        do board.addPosY(-1);
+        if (~board.detectCollision()) { return; }
+
+        // 3
+        do board.setPosX(initPosX);
+        do board.setPosY(initPosY + 2);
+        if (~board.detectCollision()) { return; }
+
+        // 4
+        do board.addPosX(sign);
+        if (~board.detectCollision()) { return; }
+
+        // failed to rotate, start restoring
+        do board.setPosX(initPosX);
+        do board.setPosY(initPosY);
+        if (toR) {
+            do rotateL();
+        } else {
+            do rotateR();
+        }
+
+        return;
+    }
+
+    method void rotateImino(boolean toR) {
+        var int dirAtStart, dirAt0;
+        var int sign;
+        var int initPosX, initPosY;
+
+        let dirAtStart = direction;
+
+        if (toR) {
+            do rotateR();
+        } else {
+            do rotateL();
+        }
+        if (~board.detectCollision()) { return; }
+
+        let dirAt0 = direction;
+
+        let initPosX = board.posX();
+        let initPosY = board.posY();
+
+        if (dirAt0 = 0 | dirAt0 = 2) {
+            if (toR) {
+                let sign = 1;
+            } else {
+                let sign = -1;
+            }
+
+            // 1
+            if (dirAt0 = 0) {
+                do board.addPosX(-(2 * sign));
+            } else {
+                do board.addPosX(-sign);
+            }
+            if (~board.detectCollision()) { return; }
+
+            // 2
+            do board.addPosX(3 * sign);
+            if (~board.detectCollision()) { return; }
+
+            // 3
+            if (dirAtStart = 1) {
+                do board.addPosX(-(3 * sign));
+                if (toR) {
+                    do board.addPosY(-2);
+                } else {
+                    do board.addPosY(-1);
+                }
+            } else {
+                if (toR) {
+                    do board.addPosY(2);
+                } else {
+                    do board.addPosY(1);
+                }
+            }
+            if (~board.detectCollision()) { return; }
+
+            // 4
+            if (dirAtStart = 1) {
+                do board.addPosX(3 * sign);
+                do board.addPosY(3);
+            } else {
+                do board.addPosX(-(3 * sign));
+                do board.addPosY(-3);
+            }
+            if (~board.detectCollision()) { return; }
+
+            // failed to rotate, start restoring
+            do board.setPosX(initPosX);
+            do board.setPosY(initPosY);
+            if (toR) {
+                do rotateL();
+            } else {
+                do rotateR();
+            }
+
+            return;
+        }
+
+        if (dirAtStart = 2) {
+            let sign = 1;
+        } else {
+            let sign = -1;
+        }
+        // 1
+        if (toR) {
+            do board.addPosX(2 * sign);
+        } else {
+            do board.addPosX(sign);
+        }
+        if (~board.detectCollision()) { return; }
+
+        // 2
+        do board.addPosX(-(3 * sign));
+        if (~board.detectCollision()) { return; }
+
+        // 3
+        do board.addPosX(3 * sign);
+        if (toR) {
+            do board.addPosY(-sign);
+        } else {
+            do board.addPosY(2 * sign);
+        }
+        if (~board.detectCollision()) { return; }
+
+        // 4
+        do board.addPosX(-(3 * sign));
+        if (toR) {
+            do board.addPosY(2 * sign);
+        } else {
+            do board.addPosY(-sign);
+        }
+        if (~board.detectCollision()) { return; }
+
+        // failed to rotate, start restoring
+        do board.setPosX(initPosX);
+        do board.setPosY(initPosY);
+        if (toR) {
+            do rotateL();
+        } else {
+            do rotateR();
+        }
+
+        return;
     }
 }

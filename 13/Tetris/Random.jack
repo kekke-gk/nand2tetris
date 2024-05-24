@@ -22,26 +22,4 @@ class Random {
     function int xor(int a, int b) {
         return (a & ~b) | (~a & b);
     }
-
-    function int shiftR(int a, int n) {
-        return Random.shift(a, n, true);
-    }
-
-    function int shiftL(int a, int n) {
-        return Random.shift(a, n, false);
-    }
-
-    function int shift(int a, int n, boolean toRight) {
-        var int i;
-        let i = 0;
-        while (i < n) {
-            if (toRight) {
-                let a = a / 2;
-            } else {
-                let a = a * 2;
-            }
-            let i = i + 1;
-        }
-        return a;
-    }
 }
