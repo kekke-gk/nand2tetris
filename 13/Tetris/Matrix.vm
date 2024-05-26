@@ -1,0 +1,294 @@
+function Matrix.new 0
+push constant 3
+call Memory.alloc 1
+pop pointer 0
+push argument 0
+pop this 1
+push argument 1
+pop this 2
+push this 1
+push this 2
+call Math.multiply 2
+call Array.new 1
+pop this 0
+push pointer 0
+call Matrix.clear 1
+pop temp 0
+push pointer 0
+return
+function Matrix.clear 1
+push argument 0
+pop pointer 0
+push constant 0
+pop local 0
+label WHILE_EXP0
+push local 0
+push this 1
+push this 2
+call Math.multiply 2
+lt
+not
+if-goto WHILE_END0
+push local 0
+push this 0
+add
+push constant 0
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0
+push local 0
+push constant 1
+add
+pop local 0
+goto WHILE_EXP0
+label WHILE_END0
+push constant 0
+return
+function Matrix.width 0
+push argument 0
+pop pointer 0
+push this 1
+return
+function Matrix.height 0
+push argument 0
+pop pointer 0
+push this 2
+return
+function Matrix.at 0
+push argument 0
+pop pointer 0
+push argument 2
+push this 1
+call Math.multiply 2
+push argument 1
+add
+push this 0
+add
+pop pointer 1
+push that 0
+return
+function Matrix.set 0
+push argument 0
+pop pointer 0
+push argument 2
+push this 1
+call Math.multiply 2
+push argument 1
+add
+push this 0
+add
+push argument 3
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0
+push constant 0
+return
+function Matrix.rotateR 0
+push argument 0
+pop pointer 0
+push pointer 0
+call Matrix.transpose 1
+pop temp 0
+push pointer 0
+call Matrix.horizontalFlip 1
+pop temp 0
+push constant 0
+return
+function Matrix.rotateL 0
+push argument 0
+pop pointer 0
+push pointer 0
+call Matrix.horizontalFlip 1
+pop temp 0
+push pointer 0
+call Matrix.transpose 1
+pop temp 0
+push constant 0
+return
+function Matrix.transpose 3
+push argument 0
+pop pointer 0
+push constant 0
+pop local 0
+label WHILE_EXP0
+push local 0
+push this 1
+push constant 1
+sub
+lt
+not
+if-goto WHILE_END0
+push local 0
+push constant 1
+add
+pop local 1
+label WHILE_EXP1
+push local 1
+push this 2
+lt
+not
+if-goto WHILE_END1
+push local 0
+push local 1
+eq
+not
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
+push pointer 0
+push local 0
+push local 1
+call Matrix.at 3
+pop local 2
+push pointer 0
+push local 0
+push local 1
+push pointer 0
+push local 1
+push local 0
+call Matrix.at 3
+call Matrix.set 4
+pop temp 0
+push pointer 0
+push local 1
+push local 0
+push local 2
+call Matrix.set 4
+pop temp 0
+label IF_FALSE0
+push local 1
+push constant 1
+add
+pop local 1
+goto WHILE_EXP1
+label WHILE_END1
+push local 0
+push constant 1
+add
+pop local 0
+goto WHILE_EXP0
+label WHILE_END0
+push constant 0
+return
+function Matrix.horizontalFlip 3
+push argument 0
+pop pointer 0
+push constant 0
+pop local 1
+label WHILE_EXP0
+push local 1
+push this 2
+lt
+not
+if-goto WHILE_END0
+push constant 0
+pop local 0
+label WHILE_EXP1
+push local 0
+push this 1
+push constant 2
+call Math.divide 2
+lt
+not
+if-goto WHILE_END1
+push pointer 0
+push local 0
+push local 1
+call Matrix.at 3
+pop local 2
+push pointer 0
+push local 0
+push local 1
+push pointer 0
+push this 1
+push local 0
+sub
+push constant 1
+sub
+push local 1
+call Matrix.at 3
+call Matrix.set 4
+pop temp 0
+push pointer 0
+push this 1
+push local 0
+sub
+push constant 1
+sub
+push local 1
+push local 2
+call Matrix.set 4
+pop temp 0
+push local 0
+push constant 1
+add
+pop local 0
+goto WHILE_EXP1
+label WHILE_END1
+push local 1
+push constant 1
+add
+pop local 1
+goto WHILE_EXP0
+label WHILE_END0
+push constant 0
+return
+function Matrix.copy 3
+push argument 0
+pop pointer 0
+push this 1
+push this 2
+call Matrix.new 2
+pop local 0
+push constant 0
+pop local 1
+label WHILE_EXP0
+push local 1
+push this 1
+lt
+not
+if-goto WHILE_END0
+push constant 0
+pop local 2
+label WHILE_EXP1
+push local 2
+push this 2
+lt
+not
+if-goto WHILE_END1
+push local 0
+push local 1
+push local 2
+push pointer 0
+push local 1
+push local 2
+call Matrix.at 3
+call Matrix.set 4
+pop temp 0
+push local 2
+push constant 1
+add
+pop local 2
+goto WHILE_EXP1
+label WHILE_END1
+push local 1
+push constant 1
+add
+pop local 1
+goto WHILE_EXP0
+label WHILE_END0
+push local 0
+return
+function Matrix.dispose 0
+push argument 0
+pop pointer 0
+push this 0
+call Array.dispose 1
+pop temp 0
+push pointer 0
+call Memory.deAlloc 1
+pop temp 0
+push constant 0
+return

@@ -1,0 +1,203 @@
+function Tetris.new 0
+push constant 4
+call Memory.alloc 1
+pop pointer 0
+push constant 15
+pop static 1
+push constant 0
+pop this 0
+push constant 5
+pop static 2
+push constant 1
+pop static 3
+push constant 0
+pop this 1
+push constant 0
+pop this 2
+call Screen.clearScreen 0
+pop temp 0
+call Board.newInstance 0
+pop temp 0
+call Board.getInstance 0
+pop this 3
+push pointer 0
+return
+function Tetris.dispose 0
+push argument 0
+pop pointer 0
+push this 3
+call Board.dispose 1
+pop temp 0
+push pointer 0
+call Memory.deAlloc 1
+pop temp 0
+push constant 0
+return
+function Tetris.newInstance 0
+call Tetris.new 0
+pop static 0
+push constant 0
+return
+function Tetris.getInstance 0
+push static 0
+return
+function Tetris.draw 0
+push argument 0
+pop pointer 0
+push this 3
+call Board.draw 1
+pop temp 0
+push constant 0
+return
+function Tetris.run 2
+push argument 0
+pop pointer 0
+label WHILE_EXP0
+push constant 0
+not
+not
+if-goto WHILE_END0
+push local 0
+pop local 1
+call Keyboard.keyPressed 0
+pop local 0
+push this 0
+push constant 1
+add
+pop this 0
+push this 0
+push static 1
+gt
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
+push this 3
+call Board.drop 1
+pop temp 0
+push constant 0
+pop this 0
+label IF_FALSE0
+push this 3
+call Board.draw 1
+pop temp 0
+push local 1
+push local 0
+eq
+if-goto IF_TRUE1
+goto IF_FALSE1
+label IF_TRUE1
+push this 1
+push constant 1
+add
+pop this 1
+push this 1
+push static 2
+eq
+if-goto IF_TRUE2
+goto IF_FALSE2
+label IF_TRUE2
+push pointer 0
+push local 0
+call Tetris.keyEvent 2
+pop temp 0
+label IF_FALSE2
+push this 1
+push static 2
+gt
+if-goto IF_TRUE3
+goto IF_FALSE3
+label IF_TRUE3
+push this 2
+push constant 1
+add
+pop this 2
+push this 2
+push static 3
+eq
+if-goto IF_TRUE4
+goto IF_FALSE4
+label IF_TRUE4
+push pointer 0
+push local 0
+call Tetris.keyEvent 2
+pop temp 0
+push constant 0
+pop this 2
+label IF_FALSE4
+label IF_FALSE3
+goto IF_END1
+label IF_FALSE1
+push pointer 0
+push local 0
+call Tetris.keyEvent 2
+pop temp 0
+push constant 0
+pop this 1
+push constant 0
+pop this 2
+label IF_END1
+goto WHILE_EXP0
+label WHILE_END0
+push constant 0
+return
+function Tetris.keyEvent 0
+push argument 0
+pop pointer 0
+push argument 1
+push constant 140
+eq
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
+push pointer 0
+call Tetris.gameOver 1
+pop temp 0
+goto IF_END0
+label IF_FALSE0
+push this 3
+push argument 1
+call Board.setMovement 2
+pop temp 0
+label IF_END0
+push constant 0
+return
+function Tetris.resetDropCount 0
+push argument 0
+pop pointer 0
+push constant 0
+pop this 0
+push constant 0
+return
+function Tetris.gameOver 0
+push argument 0
+pop pointer 0
+push constant 11
+push constant 42
+call Output.moveCursor 2
+pop temp 0
+push constant 9
+call String.new 1
+push constant 71
+call String.appendChar 2
+push constant 97
+call String.appendChar 2
+push constant 109
+call String.appendChar 2
+push constant 101
+call String.appendChar 2
+push constant 32
+call String.appendChar 2
+push constant 79
+call String.appendChar 2
+push constant 118
+call String.appendChar 2
+push constant 101
+call String.appendChar 2
+push constant 114
+call String.appendChar 2
+call Output.printString 1
+pop temp 0
+call Sys.halt 0
+pop temp 0
+push constant 0
+return
