@@ -1,0 +1,25 @@
+class Random {
+    static int r;
+
+    function void init() {
+        let r = 19;
+        return;
+    }
+
+    function int xorshift16() {
+        let r = Random.xor(r, r * 128);
+        let r = Random.xor(r, r / 512);
+        let r = Random.xor(r, r * 256);
+        return r;
+    }
+
+    function int randInt(int n) {
+        var int randValue;
+        let randValue = Math.abs(Random.xorshift16());
+        return randValue - (randValue / n * n);
+    }
+
+    function int xor(int a, int b) {
+        return (a & ~b) | (~a & b);
+    }
+}

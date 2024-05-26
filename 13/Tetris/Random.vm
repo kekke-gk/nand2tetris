@@ -1,0 +1,49 @@
+function Random.init 0
+push constant 19
+pop static 0
+push constant 0
+return
+function Random.xorshift16 0
+push static 0
+push static 0
+push constant 128
+call Math.multiply 2
+call Random.xor 2
+pop static 0
+push static 0
+push static 0
+push constant 512
+call Math.divide 2
+call Random.xor 2
+pop static 0
+push static 0
+push static 0
+push constant 256
+call Math.multiply 2
+call Random.xor 2
+pop static 0
+push static 0
+return
+function Random.randInt 1
+call Random.xorshift16 0
+call Math.abs 1
+pop local 0
+push local 0
+push local 0
+push argument 0
+call Math.divide 2
+push argument 0
+call Math.multiply 2
+sub
+return
+function Random.xor 0
+push argument 0
+push argument 1
+not
+and
+push argument 0
+not
+push argument 1
+and
+or
+return

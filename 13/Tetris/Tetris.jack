@@ -1,0 +1,101 @@
+class Tetris {
+    static Tetris instance;
+    static int DROP_COUNT;
+    static int DAS, ARR;
+    field int dropCount;
+    field int dasCount, arrCount;
+
+    field Board board;
+
+
+    constructor Tetris new() {
+        let DROP_COUNT = 15;
+        let dropCount = 0;
+
+        let DAS = 5;
+        let ARR = 1;
+        let dasCount = 0;
+        let arrCount = 0;
+
+	    do Screen.clearScreen();
+
+        do Board.newInstance();
+        let board = Board.getInstance();
+
+        return this;
+    }
+
+    method void dispose() {
+	    do board.dispose();
+        do Memory.deAlloc(this);
+        return;
+    }
+
+    function void newInstance() {
+        let instance = Tetris.new();
+        return;
+    }
+    
+    function Tetris getInstance() {
+        return instance;
+    }
+
+    method void draw() {
+        do board.draw();
+        return;
+    }
+
+    method void run() {
+        var char key, prevKey;
+
+        while (true) {
+            let prevKey = key;
+            let key = Keyboard.keyPressed();
+
+            let dropCount = dropCount + 1;
+            if (dropCount > DROP_COUNT) {
+                do board.drop();
+                let dropCount = 0;
+            }
+
+            do board.draw();
+
+            if (prevKey = key) {
+                let dasCount = dasCount + 1;
+                if (dasCount = DAS) {
+                    do keyEvent(key);
+                }
+                if (dasCount > DAS) {
+                    let arrCount = arrCount + 1;
+                    if (arrCount = ARR) {
+                        do keyEvent(key);
+                        let arrCount = 0;
+                    }
+                }
+            } else {
+                do keyEvent(key);
+                let dasCount = 0;
+                let arrCount = 0;
+            }
+        }
+        return;
+    }
+
+    method void keyEvent(int key) {
+        if (key = 140) { do gameOver(); }
+        else { do board.setMovement(key); }
+        return;
+    }
+
+    method void resetDropCount() {
+        let dropCount = 0;
+        return;
+    }
+
+    method void gameOver() {
+        do Output.moveCursor(11, 42);
+        do Output.printString("Game Over");
+        do Sys.halt();
+        return;
+    }
+}

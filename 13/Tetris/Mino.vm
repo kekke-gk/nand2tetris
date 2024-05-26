@@ -1,0 +1,977 @@
+function Mino.new 0
+push constant 4
+call Memory.alloc 1
+pop pointer 0
+push argument 0
+pop this 0
+push constant 0
+pop this 1
+push this 0
+push constant 0
+eq
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
+push constant 2
+push constant 2
+call Matrix.new 2
+pop this 2
+push this 2
+push constant 0
+push constant 0
+push constant 1
+call Matrix.set 4
+pop temp 0
+push this 2
+push constant 0
+push constant 1
+push constant 1
+call Matrix.set 4
+pop temp 0
+push this 2
+push constant 1
+push constant 0
+push constant 1
+call Matrix.set 4
+pop temp 0
+push this 2
+push constant 1
+push constant 1
+push constant 1
+call Matrix.set 4
+pop temp 0
+push pointer 0
+return
+label IF_FALSE0
+push this 0
+push constant 1
+eq
+if-goto IF_TRUE1
+goto IF_FALSE1
+label IF_TRUE1
+push constant 4
+push constant 4
+call Matrix.new 2
+pop this 2
+push this 2
+push constant 0
+push constant 1
+push constant 1
+call Matrix.set 4
+pop temp 0
+push this 2
+push constant 1
+push constant 1
+push constant 1
+call Matrix.set 4
+pop temp 0
+push this 2
+push constant 2
+push constant 1
+push constant 1
+call Matrix.set 4
+pop temp 0
+push this 2
+push constant 3
+push constant 1
+push constant 1
+call Matrix.set 4
+pop temp 0
+push pointer 0
+return
+label IF_FALSE1
+push constant 3
+push constant 3
+call Matrix.new 2
+pop this 2
+push this 0
+push constant 2
+eq
+if-goto IF_TRUE2
+goto IF_FALSE2
+label IF_TRUE2
+push this 2
+push constant 1
+push constant 0
+push constant 1
+call Matrix.set 4
+pop temp 0
+push this 2
+push constant 2
+push constant 0
+push constant 1
+call Matrix.set 4
+pop temp 0
+push this 2
+push constant 0
+push constant 1
+push constant 1
+call Matrix.set 4
+pop temp 0
+push this 2
+push constant 1
+push constant 1
+push constant 1
+call Matrix.set 4
+pop temp 0
+push pointer 0
+return
+label IF_FALSE2
+push this 0
+push constant 3
+eq
+if-goto IF_TRUE3
+goto IF_FALSE3
+label IF_TRUE3
+push this 2
+push constant 0
+push constant 0
+push constant 1
+call Matrix.set 4
+pop temp 0
+push this 2
+push constant 1
+push constant 0
+push constant 1
+call Matrix.set 4
+pop temp 0
+push this 2
+push constant 1
+push constant 1
+push constant 1
+call Matrix.set 4
+pop temp 0
+push this 2
+push constant 2
+push constant 1
+push constant 1
+call Matrix.set 4
+pop temp 0
+push pointer 0
+return
+label IF_FALSE3
+push this 0
+push constant 4
+eq
+if-goto IF_TRUE4
+goto IF_FALSE4
+label IF_TRUE4
+push this 2
+push constant 0
+push constant 0
+push constant 1
+call Matrix.set 4
+pop temp 0
+push this 2
+push constant 0
+push constant 1
+push constant 1
+call Matrix.set 4
+pop temp 0
+push this 2
+push constant 1
+push constant 1
+push constant 1
+call Matrix.set 4
+pop temp 0
+push this 2
+push constant 2
+push constant 1
+push constant 1
+call Matrix.set 4
+pop temp 0
+push pointer 0
+return
+label IF_FALSE4
+push this 0
+push constant 5
+eq
+if-goto IF_TRUE5
+goto IF_FALSE5
+label IF_TRUE5
+push this 2
+push constant 2
+push constant 0
+push constant 1
+call Matrix.set 4
+pop temp 0
+push this 2
+push constant 0
+push constant 1
+push constant 1
+call Matrix.set 4
+pop temp 0
+push this 2
+push constant 1
+push constant 1
+push constant 1
+call Matrix.set 4
+pop temp 0
+push this 2
+push constant 2
+push constant 1
+push constant 1
+call Matrix.set 4
+pop temp 0
+push pointer 0
+return
+label IF_FALSE5
+push this 0
+push constant 6
+eq
+if-goto IF_TRUE6
+goto IF_FALSE6
+label IF_TRUE6
+push this 2
+push constant 1
+push constant 0
+push constant 1
+call Matrix.set 4
+pop temp 0
+push this 2
+push constant 0
+push constant 1
+push constant 1
+call Matrix.set 4
+pop temp 0
+push this 2
+push constant 1
+push constant 1
+push constant 1
+call Matrix.set 4
+pop temp 0
+push this 2
+push constant 2
+push constant 1
+push constant 1
+call Matrix.set 4
+pop temp 0
+push pointer 0
+return
+label IF_FALSE6
+call Sys.halt 0
+pop temp 0
+push pointer 0
+return
+function Mino.maxSize 0
+push constant 4
+return
+function Mino.type 0
+push argument 0
+pop pointer 0
+push this 0
+return
+function Mino.direction 0
+push argument 0
+pop pointer 0
+push this 1
+return
+function Mino.width 0
+push argument 0
+pop pointer 0
+push this 2
+call Matrix.width 1
+return
+function Mino.height 0
+push argument 0
+pop pointer 0
+push this 2
+call Matrix.height 1
+return
+function Mino.at 0
+push argument 0
+pop pointer 0
+push this 2
+push argument 1
+push argument 2
+call Matrix.at 3
+return
+function Mino.rotateR 0
+push argument 0
+pop pointer 0
+push this 2
+call Matrix.rotateR 1
+pop temp 0
+push this 1
+push constant 1
+add
+pop this 1
+push this 1
+push constant 4
+eq
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
+push constant 0
+pop this 1
+label IF_FALSE0
+push constant 0
+return
+function Mino.rotateL 0
+push argument 0
+pop pointer 0
+push this 2
+call Matrix.rotateL 1
+pop temp 0
+push this 1
+push constant 1
+sub
+pop this 1
+push this 1
+push constant 1
+neg
+eq
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
+push constant 3
+pop this 1
+label IF_FALSE0
+push constant 0
+return
+function Mino.rotate 5
+push argument 0
+pop pointer 0
+call Board.getInstance 0
+pop this 3
+push this 0
+push constant 0
+eq
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
+push constant 0
+return
+label IF_FALSE0
+push this 0
+push constant 1
+eq
+if-goto IF_TRUE1
+goto IF_FALSE1
+label IF_TRUE1
+push pointer 0
+push argument 1
+call Mino.rotateImino 2
+return
+label IF_FALSE1
+push this 1
+pop local 0
+push argument 1
+if-goto IF_TRUE2
+goto IF_FALSE2
+label IF_TRUE2
+push pointer 0
+call Mino.rotateR 1
+pop temp 0
+goto IF_END2
+label IF_FALSE2
+push pointer 0
+call Mino.rotateL 1
+pop temp 0
+label IF_END2
+push this 3
+call Board.detectCollision 1
+not
+if-goto IF_TRUE3
+goto IF_FALSE3
+label IF_TRUE3
+push constant 0
+not
+return
+label IF_FALSE3
+push this 1
+pop local 1
+push this 3
+call Board.posX 1
+pop local 3
+push this 3
+call Board.posY 1
+pop local 4
+push local 0
+push constant 1
+eq
+push local 0
+or
+push constant 3
+eq
+if-goto IF_TRUE4
+goto IF_FALSE4
+label IF_TRUE4
+push local 0
+push constant 1
+eq
+if-goto IF_TRUE5
+goto IF_FALSE5
+label IF_TRUE5
+push constant 1
+pop local 2
+goto IF_END5
+label IF_FALSE5
+push constant 1
+neg
+pop local 2
+label IF_END5
+push this 3
+push local 2
+call Board.addPosX 2
+pop temp 0
+push this 3
+call Board.detectCollision 1
+not
+if-goto IF_TRUE6
+goto IF_FALSE6
+label IF_TRUE6
+push constant 0
+not
+return
+label IF_FALSE6
+push this 3
+push constant 1
+call Board.addPosY 2
+pop temp 0
+push this 3
+call Board.detectCollision 1
+not
+if-goto IF_TRUE7
+goto IF_FALSE7
+label IF_TRUE7
+push constant 0
+not
+return
+label IF_FALSE7
+push this 3
+push local 3
+call Board.setPosX 2
+pop temp 0
+push this 3
+push local 4
+push constant 2
+sub
+call Board.setPosY 2
+pop temp 0
+push this 3
+call Board.detectCollision 1
+not
+if-goto IF_TRUE8
+goto IF_FALSE8
+label IF_TRUE8
+push constant 0
+not
+return
+label IF_FALSE8
+push this 3
+push local 2
+call Board.addPosX 2
+pop temp 0
+push this 3
+call Board.detectCollision 1
+not
+if-goto IF_TRUE9
+goto IF_FALSE9
+label IF_TRUE9
+push constant 0
+not
+return
+label IF_FALSE9
+push this 3
+push local 3
+call Board.setPosX 2
+pop temp 0
+push this 3
+push local 4
+call Board.setPosY 2
+pop temp 0
+push argument 1
+if-goto IF_TRUE10
+goto IF_FALSE10
+label IF_TRUE10
+push pointer 0
+call Mino.rotateL 1
+pop temp 0
+goto IF_END10
+label IF_FALSE10
+push pointer 0
+call Mino.rotateR 1
+pop temp 0
+label IF_END10
+push constant 0
+return
+label IF_FALSE4
+push local 1
+push constant 3
+eq
+if-goto IF_TRUE11
+goto IF_FALSE11
+label IF_TRUE11
+push constant 1
+pop local 2
+goto IF_END11
+label IF_FALSE11
+push constant 1
+neg
+pop local 2
+label IF_END11
+push this 3
+push local 2
+call Board.addPosX 2
+pop temp 0
+push this 3
+call Board.detectCollision 1
+not
+if-goto IF_TRUE12
+goto IF_FALSE12
+label IF_TRUE12
+push constant 0
+not
+return
+label IF_FALSE12
+push this 3
+push constant 1
+neg
+call Board.addPosY 2
+pop temp 0
+push this 3
+call Board.detectCollision 1
+not
+if-goto IF_TRUE13
+goto IF_FALSE13
+label IF_TRUE13
+push constant 0
+not
+return
+label IF_FALSE13
+push this 3
+push local 3
+call Board.setPosX 2
+pop temp 0
+push this 3
+push local 4
+push constant 2
+add
+call Board.setPosY 2
+pop temp 0
+push this 3
+call Board.detectCollision 1
+not
+if-goto IF_TRUE14
+goto IF_FALSE14
+label IF_TRUE14
+push constant 0
+not
+return
+label IF_FALSE14
+push this 3
+push local 2
+call Board.addPosX 2
+pop temp 0
+push this 3
+call Board.detectCollision 1
+not
+if-goto IF_TRUE15
+goto IF_FALSE15
+label IF_TRUE15
+push constant 0
+not
+return
+label IF_FALSE15
+push this 3
+push local 3
+call Board.setPosX 2
+pop temp 0
+push this 3
+push local 4
+call Board.setPosY 2
+pop temp 0
+push argument 1
+if-goto IF_TRUE16
+goto IF_FALSE16
+label IF_TRUE16
+push pointer 0
+call Mino.rotateL 1
+pop temp 0
+goto IF_END16
+label IF_FALSE16
+push pointer 0
+call Mino.rotateR 1
+pop temp 0
+label IF_END16
+push constant 0
+return
+function Mino.rotateImino 5
+push argument 0
+pop pointer 0
+push this 1
+pop local 0
+push argument 1
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
+push pointer 0
+call Mino.rotateR 1
+pop temp 0
+goto IF_END0
+label IF_FALSE0
+push pointer 0
+call Mino.rotateL 1
+pop temp 0
+label IF_END0
+push this 3
+call Board.detectCollision 1
+not
+if-goto IF_TRUE1
+goto IF_FALSE1
+label IF_TRUE1
+push constant 0
+not
+return
+label IF_FALSE1
+push this 1
+pop local 1
+push this 3
+call Board.posX 1
+pop local 3
+push this 3
+call Board.posY 1
+pop local 4
+push local 1
+push constant 0
+eq
+push local 1
+or
+push constant 2
+eq
+if-goto IF_TRUE2
+goto IF_FALSE2
+label IF_TRUE2
+push argument 1
+if-goto IF_TRUE3
+goto IF_FALSE3
+label IF_TRUE3
+push constant 1
+pop local 2
+goto IF_END3
+label IF_FALSE3
+push constant 1
+neg
+pop local 2
+label IF_END3
+push local 1
+push constant 0
+eq
+if-goto IF_TRUE4
+goto IF_FALSE4
+label IF_TRUE4
+push this 3
+push constant 2
+push local 2
+call Math.multiply 2
+neg
+call Board.addPosX 2
+pop temp 0
+goto IF_END4
+label IF_FALSE4
+push this 3
+push local 2
+neg
+call Board.addPosX 2
+pop temp 0
+label IF_END4
+push this 3
+call Board.detectCollision 1
+not
+if-goto IF_TRUE5
+goto IF_FALSE5
+label IF_TRUE5
+push constant 0
+not
+return
+label IF_FALSE5
+push this 3
+push constant 3
+push local 2
+call Math.multiply 2
+call Board.addPosX 2
+pop temp 0
+push this 3
+call Board.detectCollision 1
+not
+if-goto IF_TRUE6
+goto IF_FALSE6
+label IF_TRUE6
+push constant 0
+not
+return
+label IF_FALSE6
+push local 0
+push constant 1
+eq
+if-goto IF_TRUE7
+goto IF_FALSE7
+label IF_TRUE7
+push this 3
+push constant 3
+push local 2
+call Math.multiply 2
+neg
+call Board.addPosX 2
+pop temp 0
+push argument 1
+if-goto IF_TRUE8
+goto IF_FALSE8
+label IF_TRUE8
+push this 3
+push constant 2
+neg
+call Board.addPosY 2
+pop temp 0
+goto IF_END8
+label IF_FALSE8
+push this 3
+push constant 1
+neg
+call Board.addPosY 2
+pop temp 0
+label IF_END8
+goto IF_END7
+label IF_FALSE7
+push argument 1
+if-goto IF_TRUE9
+goto IF_FALSE9
+label IF_TRUE9
+push this 3
+push constant 2
+call Board.addPosY 2
+pop temp 0
+goto IF_END9
+label IF_FALSE9
+push this 3
+push constant 1
+call Board.addPosY 2
+pop temp 0
+label IF_END9
+label IF_END7
+push this 3
+call Board.detectCollision 1
+not
+if-goto IF_TRUE10
+goto IF_FALSE10
+label IF_TRUE10
+push constant 0
+not
+return
+label IF_FALSE10
+push local 0
+push constant 1
+eq
+if-goto IF_TRUE11
+goto IF_FALSE11
+label IF_TRUE11
+push this 3
+push constant 3
+push local 2
+call Math.multiply 2
+call Board.addPosX 2
+pop temp 0
+push this 3
+push constant 3
+call Board.addPosY 2
+pop temp 0
+goto IF_END11
+label IF_FALSE11
+push this 3
+push constant 3
+push local 2
+call Math.multiply 2
+neg
+call Board.addPosX 2
+pop temp 0
+push this 3
+push constant 3
+neg
+call Board.addPosY 2
+pop temp 0
+label IF_END11
+push this 3
+call Board.detectCollision 1
+not
+if-goto IF_TRUE12
+goto IF_FALSE12
+label IF_TRUE12
+push constant 0
+not
+return
+label IF_FALSE12
+push this 3
+push local 3
+call Board.setPosX 2
+pop temp 0
+push this 3
+push local 4
+call Board.setPosY 2
+pop temp 0
+push argument 1
+if-goto IF_TRUE13
+goto IF_FALSE13
+label IF_TRUE13
+push pointer 0
+call Mino.rotateL 1
+pop temp 0
+goto IF_END13
+label IF_FALSE13
+push pointer 0
+call Mino.rotateR 1
+pop temp 0
+label IF_END13
+push constant 0
+return
+label IF_FALSE2
+push local 0
+push constant 2
+eq
+if-goto IF_TRUE14
+goto IF_FALSE14
+label IF_TRUE14
+push constant 1
+pop local 2
+goto IF_END14
+label IF_FALSE14
+push constant 1
+neg
+pop local 2
+label IF_END14
+push argument 1
+if-goto IF_TRUE15
+goto IF_FALSE15
+label IF_TRUE15
+push this 3
+push constant 2
+push local 2
+call Math.multiply 2
+call Board.addPosX 2
+pop temp 0
+goto IF_END15
+label IF_FALSE15
+push this 3
+push local 2
+call Board.addPosX 2
+pop temp 0
+label IF_END15
+push this 3
+call Board.detectCollision 1
+not
+if-goto IF_TRUE16
+goto IF_FALSE16
+label IF_TRUE16
+push constant 0
+not
+return
+label IF_FALSE16
+push this 3
+push constant 3
+push local 2
+call Math.multiply 2
+neg
+call Board.addPosX 2
+pop temp 0
+push this 3
+call Board.detectCollision 1
+not
+if-goto IF_TRUE17
+goto IF_FALSE17
+label IF_TRUE17
+push constant 0
+not
+return
+label IF_FALSE17
+push this 3
+push constant 3
+push local 2
+call Math.multiply 2
+call Board.addPosX 2
+pop temp 0
+push argument 1
+if-goto IF_TRUE18
+goto IF_FALSE18
+label IF_TRUE18
+push this 3
+push local 2
+neg
+call Board.addPosY 2
+pop temp 0
+goto IF_END18
+label IF_FALSE18
+push this 3
+push constant 2
+push local 2
+call Math.multiply 2
+call Board.addPosY 2
+pop temp 0
+label IF_END18
+push this 3
+call Board.detectCollision 1
+not
+if-goto IF_TRUE19
+goto IF_FALSE19
+label IF_TRUE19
+push constant 0
+not
+return
+label IF_FALSE19
+push this 3
+push constant 3
+push local 2
+call Math.multiply 2
+neg
+call Board.addPosX 2
+pop temp 0
+push argument 1
+if-goto IF_TRUE20
+goto IF_FALSE20
+label IF_TRUE20
+push this 3
+push constant 2
+push local 2
+call Math.multiply 2
+call Board.addPosY 2
+pop temp 0
+goto IF_END20
+label IF_FALSE20
+push this 3
+push local 2
+neg
+call Board.addPosY 2
+pop temp 0
+label IF_END20
+push this 3
+call Board.detectCollision 1
+not
+if-goto IF_TRUE21
+goto IF_FALSE21
+label IF_TRUE21
+push constant 0
+not
+return
+label IF_FALSE21
+push this 3
+push local 3
+call Board.setPosX 2
+pop temp 0
+push this 3
+push local 4
+call Board.setPosY 2
+pop temp 0
+push argument 1
+if-goto IF_TRUE22
+goto IF_FALSE22
+label IF_TRUE22
+push pointer 0
+call Mino.rotateL 1
+pop temp 0
+goto IF_END22
+label IF_FALSE22
+push pointer 0
+call Mino.rotateR 1
+pop temp 0
+label IF_END22
+push constant 0
+return

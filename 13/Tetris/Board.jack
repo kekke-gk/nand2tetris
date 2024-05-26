@@ -1,0 +1,537 @@
+class Board {
+    static Board instance;
+    static int W, H, SIZE;
+    static int NEXTS_POS_X, NEXTS_POS_Y;
+    static int HOLD_POS_X, HOLD_POS_Y;
+    static int SCREEN_HEIGHT;
+    static int LOCKDOWN;
+
+    field Tetris tetris;
+    field Matrix board;
+    field Matrix view;
+    field Mino mino;
+    field Mino holdMino;
+    field boolean canHold;
+    field boolean minoIsLanding;
+    field int lockDownCount;
+
+    field int posX, posY;
+    
+    constructor Board new() {
+        let W = 10;
+        let H = 20;
+        let SIZE = 12;
+        let NEXTS_POS_X = 12;
+        let NEXTS_POS_Y = 1;
+        let HOLD_POS_X = -6;
+        let HOLD_POS_Y = 1;
+        let SCREEN_HEIGHT = 256;
+        let LOCKDOWN = 15;
+
+        let tetris = Tetris.getInstance();
+        let board = Matrix.new(W + 2, H + 1);
+        let view = null;
+        let holdMino = null;
+        let canHold = true;
+        let lockDownCount = 0;
+        do createWall();
+        do spawnMino();
+        return this;
+    }
+
+    function void newInstance() {
+        let instance = Board.new();
+        return;
+    }
+    
+    function Board getInstance() {
+        return instance;
+    }
+
+    method int posX() {
+        return posX;
+    }
+
+    method int posY() {
+        return posY;
+    }
+
+    method void setPosX(int x) {
+        let posX = x;
+        return;
+    }
+
+    method void setPosY(int y) {
+        let posY = y;
+        return;
+    }
+
+    method void addPosX(int x) {
+        let posX = posX + x;
+        return;
+    }
+
+    method void addPosY(int y) {
+        let posY = posY + y;
+        return;
+    }
+
+    method void spawnMino() {
+        let mino = MinoGenerator.getMino();
+
+        do drawNextMinos();
+
+        do MinoGenerator.regenerate();
+
+        do resetPosition();
+
+        if (detectCollision()) {
+            do tetris.gameOver();
+        }
+
+        let minoIsLanding = false;
+        let lockDownCount = 0;
+
+        return;
+    }
+
+    method void resetPosition() {
+        if (mino.type() = 0) {
+            let posX = 4;
+        } else {
+            let posX = 3;
+        }
+
+        let posY = 0;
+        return;
+    }
+
+    method void createWall() {
+        var int x, y;
+
+        let x = -1;
+        while (x < (W + 1)) {
+            do set(x, H, true);
+            let x = x + 1;
+        }
+
+        let y = 0;
+        while (y < (H + 1)) {
+            do set(-1, y, true);
+            do set(10, y, true);
+            let y = y + 1;
+        }
+        return;
+    }
+
+    method boolean at(int x, int y) {
+        return board.at(x + 1, y);
+    }
+
+    method void set(int x, int y, boolean b) {
+        do board.set(x + 1, y, b);
+        return;
+    }
+
+    method int calcOffsetX(int x) {
+        return (x + 7) * SIZE;
+    }
+
+    method int calcOffsetY(int y) {
+        return y * SIZE;
+    }
+
+    // if ghost is true, color is ignored 
+    method void drawPixel(int x, int y, boolean color, boolean ghost) {
+        var int offsetX, offsetY;
+        var int x1, y1, x2, y2;
+
+        let offsetX = calcOffsetX(x);
+        let offsetY = calcOffsetY(y);
+
+        let x1 = offsetX + 1;
+        let y1 = offsetY + 1;
+        let x2 = offsetX + SIZE - 1;
+        let y2 = offsetY + SIZE - 1;
+
+        if (ghost) {
+            do Screen.setColor(false);
+            do Screen.drawRectangle(x1, y1, x2, y2);
+            do Screen.setColor(true);
+            do Screen.drawLine(x1, y1, x2, y1);
+            do Screen.drawLine(x1, y1, x1, y2);
+            do Screen.drawLine(x1, y2, x2, y2);
+            do Screen.drawLine(x2, y1, x2, y2);
+            do Screen.drawLine(x1, y1, x2, y2);
+            do Screen.drawLine(x2, y1, x1, y2);
+        } else {
+            do Screen.setColor(color);
+            do Screen.drawRectangle(x1, y1, x2, y2);
+        }
+        return;
+    }
+
+    method void drawBoard() {
+        if (~(view = null)) {
+            do view.dispose();
+        }
+        let view = board.copy();
+        return;
+    }
+
+    method void drawView() {
+        var int x, y;
+        var int v;
+        let x = -1;
+        while (x < (W + 1)) {
+            let y = 0;
+            while (y < (H + 1)) {
+                let v = view.at(x + 1, y);
+                if (v = 2) {
+                    do drawPixel(x, y, v, true);
+                } else {
+                    do drawPixel(x, y, v, false);
+                }
+                let y = y + 1;
+            }
+            let x = x + 1;
+        }
+        return;
+    }
+
+    // if ghost is true, drawOnlyBlack is ignored 
+    method void drawMino(Mino m, int px, int py, boolean drawOnlyBlack, boolean ghost, boolean drawToView) {
+        var int x, y;
+        let x = 0;
+        while (x < m.width()) {
+            let y = 0;
+            while (y < m.height()) {
+                if (drawOnlyBlack) {
+                    if (m.at(x, y)) {
+                        if (drawToView) {
+                            if (ghost) {
+                                do view.set(x + px + 1, y + py, 2);
+                            } else {
+                                do view.set(x + px + 1, y + py, true);
+                            }
+                        } else {
+                            do drawPixel(x + px, y + py, true, ghost);
+                        }
+                    }
+                } else {
+                    if (drawToView) {
+                        if (ghost) {
+                            do view.set(x + px + 1, y + py, 2);
+                        } else {
+                            do view.set(x + px + 1, y + py, m.at(x, y));
+                        }
+                    } else {
+                        do drawPixel(x + px, y + py, m.at(x, y), ghost);
+                    }
+                }
+                let y = y + 1;
+            }
+            let x = x + 1;
+        }
+        return;
+    }
+
+    method void drawCurrentMino() {
+        do drawMino(mino, posX, posY, true, false, true);
+        return;
+    }
+
+    method void eraseNextMinosArea() {
+        var int offsetX, offsetY;
+        let offsetX = calcOffsetX(NEXTS_POS_X);
+        do Screen.setColor(false);
+        do Screen.drawRectangle(offsetX, 0, offsetX + (SIZE * Mino.maxSize()), SCREEN_HEIGHT - 1);
+        return;
+    }
+
+    method void drawNextMinos() {
+        var int px, py, n;
+
+        do eraseNextMinosArea();
+
+        let n = 0;
+        while (n < 4) {
+            let px = NEXTS_POS_X;
+            let py = NEXTS_POS_Y + (n * Mino.maxSize());
+            do drawMino(MinoGenerator.getNextMino(n), px, py, true, false, false);
+            let n = n + 1;
+        }
+
+        return;
+    }
+
+    method void eraseHoldMinosArea() {
+        var int offsetX, offsetY;
+        let offsetX = calcOffsetX(HOLD_POS_X);
+        do Screen.setColor(false);
+        do Screen.drawRectangle(offsetX, 0, offsetX + (SIZE * Mino.maxSize()), SCREEN_HEIGHT - 1);
+        return;
+    }
+
+    method void drawHoldMino() {
+        do eraseHoldMinosArea();
+        do drawMino(holdMino, HOLD_POS_X, HOLD_POS_Y, true, false, false);
+        return;
+    }
+
+    method void drawGhost() {
+        var int prevPosY, ghostPosY;
+        let prevPosY = posY;
+        do dropToBottom();
+        let ghostPosY = posY;
+        let posY = prevPosY;
+        do drawMino(mino, posX, ghostPosY, true, true, true);
+        return;
+    }
+
+    method void draw() {
+        do drawBoard();
+        do drawGhost();
+        do drawCurrentMino();
+        do drawView();
+        return;
+    }
+
+    method void setMovement(int key) {
+        if (setMovement_(key) & minoIsLanding) {
+            if (lockDownCount < LOCKDOWN) {
+                let tetris = Tetris.getInstance();
+                do tetris.resetDropCount();
+                let lockDownCount = lockDownCount + 1;
+            }
+        }
+        return;
+    }
+
+    // return whether the move was successful
+    method boolean setMovement_(int key) {
+        if (key = 65) { // A
+            return mino.rotate(false);
+        }
+        if (key = 68) { // D
+            return mino.rotate(true);
+        }
+        if (key = 83) { // S
+            return hold();
+        }
+        if (key = 130) { // left arrow
+            let posX = posX - 1;
+            if (detectCollision()) {
+                let posX = posX + 1;
+                return false;
+            } else {
+                return true;
+            }
+        }
+        if (key = 132) { // right arrow
+            let posX = posX + 1;
+            if (detectCollision()) {
+                let posX = posX - 1;
+                return false;
+            } else {
+                return true;
+            }
+        }
+        if (key = 131) { // up arrow
+            do hardDrop();
+            return true;
+        }
+        if (key = 133) { // down arrow
+            let posY = posY + 1;
+            if (detectCollision()) {
+                let posY = posY - 1;
+                return false;
+            } else {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    method void drop() {
+        let posY = posY + 1;
+        if (detectCollision()) {
+            let posY = posY - 1;
+            do place();
+            do eraseLines();
+            do spawnMino();
+        } else {
+            let posY = posY + 1;
+            let minoIsLanding = detectCollision();
+            let lockDownCount = 0;
+            let posY = posY - 1;
+        }
+        return;
+    }
+
+    method boolean hold() {
+        var Mino tmp;
+        if (~canHold) {
+            return false;
+        }
+
+        let minoIsLanding = false;
+        let lockDownCount = 0;
+
+        let canHold = false;
+        if (holdMino = null) {
+            let holdMino = mino;
+            do spawnMino();
+        } else {
+            let tmp = mino;
+            let mino = holdMino;
+            let holdMino = tmp;
+            do resetPosition();
+        }
+
+        do drawHoldMino();
+        return true;
+    }
+
+    method void place() {
+        var int x, y;
+
+        let x = 0;
+        while (x < mino.width()) {
+            let y = 0;
+            while (y < mino.height()) {
+                if (mino.at(x, y)) {
+                    do set(x + posX, y + posY, true);
+                }
+                let y = y + 1;
+            }
+            let x = x + 1;
+        }
+
+        let canHold = true;
+
+        return;
+    }
+
+    method void eraseLines() {
+        var int x, y;
+        var boolean isFullLine;
+        var boolean isEmptyLine;
+
+        let y = H - 1;
+        while (~(y < 0)) {
+            let isFullLine = true;
+            let isEmptyLine = true;
+            let x = 0;
+            while (x < W) {
+                if (at(x, y)) {
+                    let isEmptyLine = false;
+                } else {
+                    let isFullLine = false;
+                }
+                let x = x + 1;
+            }
+            if (isFullLine) {
+                do eraseLine(y);
+            } else {
+                let y = y - 1;
+            }
+            if (isEmptyLine) {
+                return;
+            }
+        }
+        return;
+    }
+
+    method void eraseLine(int yErase) {
+        var int x, y;
+        var boolean isEmptyLine;
+
+        let x = 0;
+        while (x < W) {
+            do set(x, yErase, false);
+            let x = x + 1;
+        }
+
+        let y = yErase - 1;
+        while (~(y < 0)) {
+            let isEmptyLine = true;
+            let x = 0;
+            while (x < W) {
+                if (at(x, y)) {
+                    let isEmptyLine = false;
+                }
+                do set(x, y + 1, at(x, y));
+                let x = x + 1;
+            }
+            if (isEmptyLine) {
+                return;
+            }
+            let y = y - 1;
+        }
+        return;
+    }
+
+    method void dropToBottom() {
+        while (~detectCollision()) {
+            let posY = posY + 1;
+        }
+        let posY = posY - 1;
+        return;
+    }
+
+    method void hardDrop() {
+        do dropToBottom();
+        do place();
+        do eraseLines();
+        do spawnMino();
+        return;
+    }
+
+    method boolean detectCollision() {
+        var int x, y;
+        let x = 0;
+        while (x < mino.width()) {
+            let y = 0;
+            while (y < mino.height()) {
+                if (at(x + posX, y + posY) & mino.at(x, y)) {
+                    return true;
+                }
+                let y = y + 1;
+            }
+            let x = x + 1;
+        }
+        return false;
+    }
+
+    method void dispose() {
+        do board.dispose();
+        do Memory.deAlloc(this);
+        return;
+    }
+
+/*
+      -7-6-5-4-3-2-1 0 1 2 3 4 5 6 7 8 9101112131415
+ 0    □□□□□□■□□□□□□□□□□■□□□□□
+ 1    □■■■■□■□□□□□□□□□□■□■■■■
+ 2    □■Hold■□■□□□□□□□□□□■□■Next■
+ 3    □■    ■□■□□□□□□□□□□■□■ 00 ■
+ 4    □■■■■□■□□□□□□□□□□■□■■■■
+ 5    □□□□□□■□□□□□□□□□□■□■■■■
+ 6    □□□□□□■□□□□□□□□□□■□■Next■
+ 7    □□□□□□■□□□□□□□□□□■□■ 01 ■
+ 8    □□□□□□■□□□□□□□□□□■□■■■■
+ 9    □□□□□□■□□□□□□□□□□■□■■■■
+10    □□□□□□■□□□□□□□□□□■□■Next■
+11    □□□□□□■□□□□□□□□□□■□■ 02 ■
+12    □□□□□□■□□□□□□□□□□■□■■■■
+13    □□□□□□■□□□□□□□□□□■□■■■■
+14    □□□□□□■□□□□□□□□□□■□■Next■
+15    □□□□□□■□□□□□□□□□□■□■ 03 ■
+16    □□□□□□■□□□□□□□□□□■□■■■■
+17    □□□□□□■□□□□□□□□□□■□□□□□
+18    □□□□□□■□□□□□□□□□□■□□□□□
+19    □□□□□□■□□□□□□□□□□■□□□□□
+20    □□□□□□■■■■■■■■■■■■□□□□□
+*/
+}

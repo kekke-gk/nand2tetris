@@ -1,0 +1,84 @@
+class MinoGenerator {
+    static int MINO_TYPE_NUM;
+    static int i;
+    static Array types;
+    static Mino mino;
+    static Mino nextMino0;
+    static Mino nextMino1;
+    static Mino nextMino2;
+    static Mino nextMino3;
+
+    function void init() {
+        let MINO_TYPE_NUM = 7;
+        let types = Array.new(MINO_TYPE_NUM);
+        do MinoGenerator.reset();
+
+        let mino = MinoGenerator.generate();
+        let nextMino0 = MinoGenerator.generate();
+        let nextMino1 = MinoGenerator.generate();
+        let nextMino2 = MinoGenerator.generate();
+        let nextMino3 = MinoGenerator.generate();
+
+        return;
+    }
+
+    function Mino getMino() {
+        return mino;
+    }
+
+    function Mino getNextMino(int n) {
+        if (n = 0) { return nextMino0; }
+        if (n = 1) { return nextMino1; }
+        if (n = 2) { return nextMino2; }
+        return nextMino3;
+    }
+
+    function Mino generate() {
+        var Mino mino;
+
+        let mino = Mino.new(types[i]);
+
+        let i = i + 1;
+        if (i = MINO_TYPE_NUM) {
+            do MinoGenerator.reset();
+        }
+        return mino;
+    }
+
+    function Mino regenerate() {
+        let mino = nextMino0;
+        let nextMino0 = nextMino1;
+        let nextMino1 = nextMino2;
+        let nextMino2 = nextMino3;
+        let nextMino3 = MinoGenerator.generate();
+        return mino;
+    }
+
+    function void reset() {
+        var int j, k, r;
+        var boolean notContain;
+
+        let j = 0;
+
+        while (j < MINO_TYPE_NUM) {
+            let r = Random.randInt(MINO_TYPE_NUM);
+
+            let notContain = true;
+            let k = 0;
+            while (k < j) {
+                if (types[k] = r) {
+                    let notContain = false;
+                }
+                let k = k + 1;
+            }
+
+            if (notContain) {
+                let types[j] = r;
+                let j = j + 1;
+            }
+        }
+
+        let i = 0;
+        return;
+    }
+}
