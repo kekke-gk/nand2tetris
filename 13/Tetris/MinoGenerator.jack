@@ -1,4 +1,5 @@
 class MinoGenerator {
+    static int MINO_TYPE_NUM;
     static int i;
     static Array types;
     static Mino mino;
@@ -8,7 +9,8 @@ class MinoGenerator {
     static Mino nextMino3;
 
     function void init() {
-        let types = Array.new(7);
+        let MINO_TYPE_NUM = 7;
+        let types = Array.new(MINO_TYPE_NUM);
         do MinoGenerator.reset();
 
         let mino = MinoGenerator.generate();
@@ -25,15 +27,9 @@ class MinoGenerator {
     }
 
     function Mino getNextMino(int n) {
-        if (n = 0) {
-            return nextMino0;
-        }
-        if (n = 1) {
-            return nextMino1;
-        }
-        if (n = 2) {
-            return nextMino2;
-        }
+        if (n = 0) { return nextMino0; }
+        if (n = 1) { return nextMino1; }
+        if (n = 2) { return nextMino2; }
         return nextMino3;
     }
 
@@ -43,7 +39,7 @@ class MinoGenerator {
         let mino = Mino.new(types[i]);
 
         let i = i + 1;
-        if (i = 7) {
+        if (i = MINO_TYPE_NUM) {
             do MinoGenerator.reset();
         }
         return mino;
@@ -64,8 +60,8 @@ class MinoGenerator {
 
         let j = 0;
 
-        while (j < 7) {
-            let r = Random.randInt(7);
+        while (j < MINO_TYPE_NUM) {
+            let r = Random.randInt(MINO_TYPE_NUM);
 
             let notContain = true;
             let k = 0;
