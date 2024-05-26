@@ -4,6 +4,7 @@ class Board {
     static int NEXTS_POS_X, NEXTS_POS_Y;
     static int HOLD_POS_X, HOLD_POS_Y;
     static int SCREEN_HEIGHT;
+    static int LOCKDOWN;
 
     field Tetris tetris;
     field Matrix board;
@@ -11,6 +12,8 @@ class Board {
     field Mino mino;
     field Mino holdMino;
     field boolean canHold;
+    field boolean minoIsLanding;
+    field int lockDownCount;
 
     field int posX, posY;
     
@@ -23,12 +26,14 @@ class Board {
         let HOLD_POS_X = -6;
         let HOLD_POS_Y = 1;
         let SCREEN_HEIGHT = 256;
+        let LOCKDOWN = 15;
 
         let tetris = Tetris.getInstance();
         let board = Matrix.new(W + 2, H + 1);
         let view = null;
         let holdMino = null;
         let canHold = true;
+        let lockDownCount = 0;
         do createWall();
         do spawnMino();
         return this;
@@ -83,6 +88,9 @@ class Board {
         if (detectCollision()) {
             do tetris.gameOver();
         }
+
+        let minoIsLanding = false;
+        let lockDownCount = 0;
 
         return;
     }
@@ -290,37 +298,59 @@ class Board {
     }
 
     method void setMovement(int key) {
+        if (setMovement_(key) & minoIsLanding) {
+            if (lockDownCount < LOCKDOWN) {
+                let tetris = Tetris.getInstance();
+                do tetris.resetDropCount();
+                let lockDownCount = lockDownCount + 1;
+            }
+        }
+        return;
+    }
+
+    // return whether the move was successful
+    method boolean setMovement_(int key) {
         if (key = 65) { // A
-            do mino.rotate(false);
+            return mino.rotate(false);
         }
         if (key = 68) { // D
-            do mino.rotate(true);
+            return mino.rotate(true);
         }
         if (key = 83) { // S
-            do hold();
+            return hold();
         }
         if (key = 130) { // left arrow
             let posX = posX - 1;
             if (detectCollision()) {
                 let posX = posX + 1;
+                return false;
+            } else {
+                return true;
             }
         }
         if (key = 132) { // right arrow
             let posX = posX + 1;
             if (detectCollision()) {
                 let posX = posX - 1;
+                return false;
+            } else {
+                return true;
             }
         }
         if (key = 131) { // up arrow
             do hardDrop();
+            return true;
         }
         if (key = 133) { // down arrow
             let posY = posY + 1;
             if (detectCollision()) {
                 let posY = posY - 1;
+                return false;
+            } else {
+                return true;
             }
         }
-        return;
+        return false;
     }
 
     method void drop() {
@@ -330,15 +360,23 @@ class Board {
             do place();
             do eraseLines();
             do spawnMino();
+        } else {
+            let posY = posY + 1;
+            let minoIsLanding = detectCollision();
+            let lockDownCount = 0;
+            let posY = posY - 1;
         }
         return;
     }
 
-    method void hold() {
+    method boolean hold() {
         var Mino tmp;
         if (~canHold) {
-            return;
+            return false;
         }
+
+        let minoIsLanding = false;
+        let lockDownCount = 0;
 
         let canHold = false;
         if (holdMino = null) {
@@ -352,7 +390,7 @@ class Board {
         }
 
         do drawHoldMino();
-        return;
+        return true;
     }
 
     method void place() {

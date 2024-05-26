@@ -87,6 +87,11 @@ class Tetris {
         return;
     }
 
+    method void resetDropCount() {
+        let dropCount = 0;
+        return;
+    }
+
     method void gameOver() {
         do Output.moveCursor(11, 42);
         do Output.printString("Game Over");
