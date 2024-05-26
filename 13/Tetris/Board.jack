@@ -274,7 +274,7 @@ class Board {
     method void drawGhost() {
         var int prevPosY, ghostPosY;
         let prevPosY = posY;
-        do hardDrop();
+        do dropToBottom();
         let ghostPosY = posY;
         let posY = prevPosY;
         do drawMino(mino, posX, ghostPosY, true, true, true);
@@ -326,6 +326,7 @@ class Board {
     method void drop() {
         let posY = posY + 1;
         if (detectCollision()) {
+            let posY = posY - 1;
             do place();
             do eraseLines();
             do spawnMino();
@@ -356,7 +357,6 @@ class Board {
 
     method void place() {
         var int x, y;
-        let posY = posY - 1;
 
         let x = 0;
         while (x < mino.width()) {
@@ -434,11 +434,19 @@ class Board {
         return;
     }
 
-    method void hardDrop() {
+    method void dropToBottom() {
         while (~detectCollision()) {
             let posY = posY + 1;
         }
         let posY = posY - 1;
+        return;
+    }
+
+    method void hardDrop() {
+        do dropToBottom();
+        do place();
+        do eraseLines();
+        do spawnMino();
         return;
     }
 
